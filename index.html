@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SLUDGECORE // OPERATIONAL WAN PROTOCOL</title>
+  <title>SLUDGECORE // TOTAL ENGINE OVERHAUL</title>
   <style>
     body, html { margin: 0; padding: 0; overflow: hidden; width: 100%; height: 100%; background: #000; font-family: 'Impact', 'Arial Black', sans-serif; user-select: none; }
     
@@ -12,6 +12,7 @@
       height: calc(100vh - 80px) !important;
       image-rendering: pixelated;
       display: block;
+      cursor: crosshair;
     }
 
     /* DOS Network Terminal Lobby Browser */
@@ -29,7 +30,7 @@
     .input-field {
       background: #000; border: 1px solid #00ff00; color: #00ff00; padding: 8px; font-family: monospace; font-size: 16px; width: 80%; margin-bottom: 15px; text-align: center; outline: none;
     }
-    .btn-connect { background: #00ff00; color: #000; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; font-family: monospace; font-size: 16px; transition: background 0.2s; }
+    .btn-connect { background: #00ff00; color: #000; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; font-family: monospace; font-size: 16px; }
     .btn-connect:hover { background: #ffff00; }
 
     /* Combat Kill Feed */
@@ -48,7 +49,7 @@
       display: flex; flex-direction: column; justify-content: flex-end;
       font-family: monospace; font-size: 13px; text-shadow: 1px 1px #000;
     }
-    #chat-log { overflow: hidden; display: flex; flex-direction: column; gap: 3px; color: #ffffff; background: rgba(0,0,0,0.4); border-radius: 4px; padding: 4px; }
+    #chat-log { overflow: hidden; display: flex; flex-direction: column; gap: 3px; color: #ffffff; background: rgba(0,0,0,0.5); padding: 6px; border-radius: 4px; }
     #chat-input {
       background: #111; border: 2px solid #ff3300; color: #00ff00;
       padding: 6px; font-family: monospace; font-size: 13px; outline: none;
@@ -60,7 +61,7 @@
       position: absolute; top: 60%; left: 50%; transform: translate(-50%, -50%);
       font-family: monospace; font-size: 14px; color: #ff3333;
       font-weight: bold; display: none; z-index: 25; letter-spacing: 2px;
-      text-shadow: 1px 1px #000; background: rgba(0,0,0,0.75); padding: 6px 12px; border: 1px solid #ff3333;
+      text-shadow: 1px 1px #000; background: rgba(0,0,0,0.8); padding: 6px 12px; border: 1px solid #ff3333;
     }
 
     /* Doom-Style Status Bar */
@@ -75,7 +76,7 @@
     .status-val { font-size: 32px; color: #ff0000; font-weight: bold; text-shadow: 2px 2px #440000; font-family: monospace; }
     .status-title { font-size: 11px; color: #8a8a85; font-family: monospace; margin-bottom: 2px; }
 
-    #crosshair { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 6px; height: 6px; border: 2px solid #ff0000; pointer-events: none; z-index: 20; }
+    #crosshair { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 8px; height: 8px; border: 2px solid #ff0000; pointer-events: none; z-index: 20; }
   </style>
   
   <script src="https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.min.js"></script>
@@ -84,20 +85,17 @@
 <body>
 
   <div id="terminal-lobby">
-    <div class="terminal-title">SLUDGECORE WAN BROADCAST MODULE</div>
-    <div style="color: #889988; margin-bottom: 25px;">REAL-TIME PEER-TO-PEER INTERFACE CONNECTIONS</div>
+    <div class="terminal-title">SLUDGECORE MULTIPLAYER OVERHAUL</div>
+    <div style="color: #889988; margin-bottom: 25px;">STABLE WEBRTC P2P DEPLOYMENT NODE</div>
     
     <div class="setup-box">
-      <div style="color: #ffff00; margin-bottom: 5px; font-size: 13px;">ROOM LINK CLUSTER ID:</div>
+      <div style="color: #ffff00; margin-bottom: 5px; font-size: 13px;">CLUSTER LOBBY ID:</div>
       <input type="text" id="room-field" class="input-field" value="THORNTON_GRID_01" maxlength="20">
 
-      <div style="color: #ffff00; margin-bottom: 5px; font-size: 13px;">YOUR HANDLE TAG:</div>
+      <div style="color: #ffff00; margin-bottom: 5px; font-size: 13px;">PILOT CALLSIGN:</div>
       <input type="text" id="username-field" class="input-field" value="User_Alpha" maxlength="14">
       <br>
       <button class="btn-connect" onclick="initializeLiveNetwork()">INITIALIZE_P2P_LINK</button>
-    </div>
-    <div style="margin-top: 25px; color: #556655; font-size: 11px; max-width: 500px; text-align: center;">
-      CONTROL CODES: [W,A,S,D] Move // Mouse Look // [Left-Click] Fire // [Enter] Toggle Text Chat Channel // Hold [V] to Transmit Voice Streams.
     </div>
   </div>
 
@@ -136,7 +134,6 @@
   </div>
 
 <script>
-// Structural Level Collisions Array Map
 const LEVEL_GRID = [
   [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
   [1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1],
@@ -154,12 +151,12 @@ const SCALE = 10;
 const pixelScale = 3.5;
 
 let scene, camera, renderer, clock;
-let player = { pos: new THREE.Vector3(15, 3.5, 15), rot: new THREE.Vector3(), speed: 0.15, health: 100, name: '' };
+let player = { pos: new THREE.Vector3(15, 3.5, 15), rot: new THREE.Vector3(0, 0, 0), speed: 0.16, health: 100, name: '' };
 let keys = {};
 let isEngineActive = false;
 let isChatOpen = false;
 
-// 0.980 Rate Locking Mechanics Variables
+// Weapon Lock Framework
 let canShoot = true;
 const FIRE_DELAY = 980; 
 
@@ -168,7 +165,7 @@ const activeSparks = [];
 let weaponGroup, muzzleFlashObj;
 let killCount = 0;
 
-// WebRTC Network Sync Topologies
+// Networking Setup
 let roomClusterId = '';
 let myPeerId = '';
 let peer = null;
@@ -200,53 +197,37 @@ async function initializeLiveNetwork() {
   player.name = document.getElementById('username-field').value.trim() || 'Pilot_Link';
   roomClusterId = document.getElementById('room-field').value.trim() || 'THORNTON_GRID_01';
   
-  // Audio Capture Initializations
   try {
     localAudioStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-    // Keep mic dead until V key triggers execution block
     localAudioStream.getAudioTracks()[0].enabled = false;
   } catch(err) {
-    console.warn("Hardware Mic Unreachable. Text channel connection remains active.");
+    console.warn("Audio hardware initialization bypassed.");
   }
 
   document.getElementById('terminal-lobby').style.display = 'none';
   document.getElementById('status-bar').style.display = 'grid';
-  document.body.requestPointerLock();
 
-  // Create explicit room coordinate targeting mapping
   myPeerId = 'SLUDGE_' + roomClusterId + '_' + Math.random().toString(36).substr(2, 6);
   peer = new Peer(myPeerId);
 
   peer.on('open', (id) => {
-    pushNotification(`Link Synced. Handle: [${player.name}]`);
-    
-    // Broadcast signature key frames to local tab groups instantly
+    pushNotification(`Data Synced. Core Tag: [${player.name}]`);
     localStorage.setItem('sludgecore_ping_' + roomClusterId, myPeerId + ':' + Date.now());
     hookDiscoverySignaling();
   });
 
-  peer.on('connection', (conn) => {
-    setupDataConnectionListeners(conn);
-  });
-
-  peer.on('call', (call) => {
-    call.answer(localAudioStream);
-    setupVoiceStreamListeners(call);
-  });
+  peer.on('connection', (conn) => { setupDataConnectionListeners(conn); });
+  peer.on('call', (call) => { call.answer(localAudioStream); setupVoiceStreamListeners(call); });
 
   initThreeEngine();
 }
 
 function hookDiscoverySignaling() {
-  // Query for structural sister keys every 2.5 seconds to sweep channel array drops
   setInterval(() => {
     if(!peer || peer.destroyed) return;
     
-    // Clear dead entries from local counting HUD
-    const connectedCount = Object.keys(dataConnections).length;
-    document.getElementById('peer-count-display').innerText = String(connectedCount).padStart(2, '0');
+    document.getElementById('peer-count-display').innerText = String(Object.keys(dataConnections).length).padStart(2, '0');
 
-    // Pump current state transform matrix down data links
     broadcastPayload({
       type: 'transform',
       name: player.name,
@@ -258,18 +239,14 @@ function hookDiscoverySignaling() {
 
   window.addEventListener('storage', (e) => {
     if (e.key === 'sludgecore_ping_' + roomClusterId && e.newValue) {
-      const parts = e.newValue.split(':');
-      const targetId = parts[0];
-      if (targetId !== myPeerId) {
-        initiateConnectionToPeerNode(targetId);
-      }
+      const targetId = e.newValue.split(':')[0];
+      if (targetId !== myPeerId) initiateConnectionToPeerNode(targetId);
     }
   });
 }
 
 function initiateConnectionToPeerNode(targetId) {
   if (dataConnections[targetId] || targetId === myPeerId) return;
-
   const conn = peer.connect(targetId);
   conn.on('open', () => {
     setupDataConnectionListeners(conn);
@@ -282,18 +259,13 @@ function initiateConnectionToPeerNode(targetId) {
 
 function setupDataConnectionListeners(conn) {
   dataConnections[conn.peer] = conn;
-  
   conn.on('data', (data) => {
     if(data.type === 'transform') updateRemotePlayerEntity(conn.peer, data);
     if(data.type === 'chat') pushChatMessage(data.sender, data.text, '#ffff00');
     if(data.type === 'voice_ptt') toggleVoiceHUDIndicator(data.sender, data.isActive);
-    if(data.type === 'frag') pushNotification(`[${data.killer}] wiped out [${data.victim}]`);
+    if(data.type === 'frag') pushNotification(`[${data.killer}] swept [${data.victim}]`);
   });
-
-  conn.on('close', () => {
-    removeRemotePlayerEntity(conn.peer);
-    delete dataConnections[conn.peer];
-  });
+  conn.on('close', () => { removeRemotePlayerEntity(conn.peer); delete dataConnections[conn.peer]; });
 }
 
 function setupVoiceStreamListeners(call) {
@@ -307,27 +279,19 @@ function setupVoiceStreamListeners(call) {
 
 function broadcastPayload(obj) {
   for (let id in dataConnections) {
-    if (dataConnections[id].open) {
-      dataConnections[id].send(obj);
-    }
+    if (dataConnections[id].open) dataConnections[id].send(obj);
   }
 }
 
 function updateRemotePlayerEntity(peerId, data) {
   if (!activePeers3D[peerId]) {
-    const rGeo = new THREE.BoxGeometry(2.0, 4.0, 2.0);
-    const rMat = new THREE.MeshBasicMaterial({ color: 0x5a635c });
-    const mesh = new THREE.Mesh(rGeo, rMat);
-    
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(2.0, 4.0, 2.0), new THREE.MeshBasicMaterial({ color: 0x5a635c }));
     const helmet = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.2, 1.2), new THREE.MeshBasicMaterial({ color: 0x00ffff }));
-    helmet.position.set(0, 2.3, 0);
-    mesh.add(helmet);
-
+    helmet.position.set(0, 2.3, 0); mesh.add(helmet);
     scene.add(mesh);
     activePeers3D[peerId] = { mesh: mesh, name: data.name };
-    pushNotification(`Link Locked: [${data.name}] entered.`);
+    pushNotification(`Link Synced: [${data.name}]`);
   }
-
   const pObj = activePeers3D[peerId];
   pObj.mesh.position.set(data.x, 2.0, data.z);
   pObj.mesh.rotation.y = data.ry;
@@ -335,14 +299,14 @@ function updateRemotePlayerEntity(peerId, data) {
 
 function removeRemotePlayerEntity(peerId) {
   if (activePeers3D[peerId]) {
-    pushNotification(`[${activePeers3D[peerId].name}] broken data link`);
+    pushNotification(`[${activePeers3D[peerId].name}] broken array`);
     scene.remove(activePeers3D[peerId].mesh);
     delete activePeers3D[peerId];
   }
 }
 
 // ======================================================
-// ================= CORE ENGINE SETUP ==================
+// ================= ENGINE INITIALIZATION ==============
 // ======================================================
 function initThreeEngine() {
   scene = new THREE.Scene();
@@ -358,12 +322,15 @@ function initThreeEngine() {
   document.body.appendChild(renderer.domElement);
 
   clock = new THREE.Clock();
-
-  const ambientLight = new THREE.AmbientLight(0x888888);
-  scene.add(ambientLight);
+  scene.add(new THREE.AmbientLight(0x888888));
 
   buildGrittyWorld();
   buildCenteredWeapon();
+
+  // POINTER LOCK & INPUT ACTION REGISTRATIONS
+  renderer.domElement.addEventListener('click', () => {
+    if (!isChatOpen) renderer.domElement.requestPointerLock();
+  });
 
   window.addEventListener('keydown', handleKeySystemDown);
   window.addEventListener('keyup', handleKeySystemUp);
@@ -384,35 +351,30 @@ function buildGrittyWorld() {
       if (LEVEL_GRID[r][c] === 1) {
         const wallBlock = new THREE.Mesh(blockGeo, wallMat);
         wallBlock.position.set(c * SCALE, SCALE / 2, r * SCALE);
-        scene.add(wallBlock);
-        walls.push(wallBlock);
+        scene.add(wallBlock); walls.push(wallBlock);
       }
     }
   }
-
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(500, 500), new THREE.MeshLambertMaterial({ color: 0x121411 }));
-  floor.rotation.x = -Math.PI / 2;
-  scene.add(floor);
+  floor.rotation.x = -Math.PI / 2; scene.add(floor);
 }
 
 function buildCenteredWeapon() {
   weaponGroup = new THREE.Group();
   const baseFrame = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.35, 0.6), new THREE.MeshBasicMaterial({ color: 0x444845 }));
   const barrel = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.06, 0.5), new THREE.MeshBasicMaterial({ color: 0x1f2120 }));
-  barrel.position.set(0, 0.1, -0.4);
-  baseFrame.add(barrel);
+  barrel.position.set(0, 0.1, -0.4); baseFrame.add(barrel);
 
   muzzleFlashObj = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, 0.2), new THREE.MeshBasicMaterial({ color: 0xffcc00 }));
   muzzleFlashObj.position.set(0, 0.1, -0.7); muzzleFlashObj.visible = false;
   baseFrame.add(muzzleFlashObj);
 
-  baseFrame.position.set(0, -0.28, -0.55);
-  weaponGroup.add(baseFrame);
+  baseFrame.position.set(0, -0.28, -0.55); weaponGroup.add(baseFrame);
   camera.add(weaponGroup);
 }
 
 // ======================================================
-// ================= RUNTIME LOOP CONTROL ===============
+// ================= RUNTIME CORE FUNCTIONS =============
 // ======================================================
 function handleKeySystemDown(e) {
   if (e.code === 'Enter') {
@@ -443,9 +405,11 @@ function handleKeySystemUp(e) {
 }
 
 function handleGrittyLook(e) {
-  if (document.pointerLockElement !== document.body || isChatOpen) return;
-  player.rot.y -= e.movementX * 0.0035;
-  player.rot.x -= e.movementY * 0.0035;
+  // Lock checking restriction directly tied to canvas pointer visibility tracking
+  if (document.pointerLockElement !== renderer.domElement || isChatOpen) return;
+  
+  player.rot.y -= e.movementX * 0.0030;
+  player.rot.x -= e.movementY * 0.0030;
   player.rot.x = Math.max(-Math.PI / 2.5, Math.min(Math.PI / 2.5, player.rot.x));
 }
 
@@ -454,7 +418,7 @@ function toggleVoiceHUDIndicator(senderName, isActive) {
   if(isActive) {
     node.style.background = '#441111'; node.style.borderColor = '#ff3333';
     document.getElementById('voice-label').style.color = '#ff3333';
-    document.getElementById('voice-status').innerText = `${senderName.toUpperCase()} XMIT`;
+    document.getElementById('voice-status').innerText = `${senderName.toUpperCase()} TALK`;
     document.getElementById('voice-status').style.color = '#ff3333';
   } else {
     node.style.background = '#1f1f1e'; node.style.borderColor = '#444';
@@ -467,7 +431,8 @@ function toggleVoiceHUDIndicator(senderName, isActive) {
 function toggleTextChat() {
   const input = document.getElementById('chat-input');
   if (!isChatOpen) {
-    isChatOpen = true; input.style.display = 'block'; input.focus();
+    isChatOpen = true; keys = {}; // Clear keys array to drop drifting movement while typing
+    input.style.display = 'block'; input.focus();
     document.exitPointerLock();
   } else {
     isChatOpen = false;
@@ -476,7 +441,7 @@ function toggleTextChat() {
       broadcastPayload({ type: 'chat', sender: player.name, text: input.value });
     }
     input.value = ""; input.style.display = 'none';
-    document.body.requestPointerLock();
+    renderer.domElement.requestPointerLock();
   }
 }
 
@@ -488,9 +453,8 @@ function pushChatMessage(sender, text, colorHex) {
   if (log.children.length > 6) log.removeChild(log.children[0]);
 }
 
-// 0.980-Second Bolt Lock Mechanism Pipeline
 function fireWeaponSystem() {
-  if (document.pointerLockElement !== document.body || player.health <= 0 || isChatOpen) return;
+  if (document.pointerLockElement !== renderer.domElement || isChatOpen) return;
   
   if (!canShoot) {
     const alertEl = document.getElementById('cooldown-alert');
@@ -500,11 +464,11 @@ function fireWeaponSystem() {
   }
 
   canShoot = false;
-  weaponGroup.children[0].position.z += 0.22; // Physical mechanical slide recoil snap
+  weaponGroup.children[0].position.z += 0.22;
   muzzleFlashObj.visible = true;
 
   setTimeout(() => { muzzleFlashObj.visible = false; }, 120);
-  setTimeout(() => { canShoot = true; }, FIRE_DELAY); // Rate lock strictly locked to 980ms
+  setTimeout(() => { canShoot = true; }, FIRE_DELAY);
 
   const raycaster = new THREE.Raycaster();
   raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
@@ -556,7 +520,7 @@ function mainEngineLoop() {
   const delta = clock.getDelta();
   const time = clock.getElapsedTime();
 
-  if (player.health > 0 && !isChatOpen) {
+  if (!isChatOpen) {
     camera.rotation.set(0, 0, 0);
     camera.rotation.y = player.rot.y;
     camera.rotation.x = player.rot.x;
@@ -579,7 +543,6 @@ function mainEngineLoop() {
       player.pos.x = checkX; player.pos.z = checkZ;
     }
 
-    // Gun sway linear interpolation transitions
     let bobY = -0.28; let bobX = 0;
     if (keys['KeyW'] || keys['KeyS'] || keys['KeyA'] || keys['KeyD']) {
       bobY += Math.abs(Math.sin(time * 12)) * 0.04 - 0.02;
