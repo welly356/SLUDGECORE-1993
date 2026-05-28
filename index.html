@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VANGUARD INFILTRATOR // NEXT-GEN FPS</title>
+  <style>
+    body, html { margin: 0; padding: 0; overflow: hidden; width: 100%; height: 100%; background: #020205; font-family: 'Segoe UI', Roboto, sans-serif; user-select: none; }
+    
+    /* Crisp, High-Res Cinematic Viewport */
+    canvas {
+      width: 100vw;
+      height: 100vh;
+      display: block;
+    }
+
+    /* Cinematic Overlay Screen */
+    #overlay {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(135deg, #050b14 0%, #010307 100%);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 50;
+      color: #fff; text-align: center;
+    }
+    .btn-deploy {
+      background: transparent; color: #00ffcc; padding: 18px 45px; font-size: 20px;
+      border: 2px solid #00ffcc; font-weight: bold; letter-spacing: 3px; cursor: pointer;
+      text-transform: uppercase; transition: all 0.3s ease; box-shadow: 0 0 15px rgba(0,255,204,0.2);
+    }
+    .btn-deploy:hover { background: #00ffcc; color: #000; box-shadow: 0 0 30px #00ffcc; }
+
+    /* Minimalist Tactical Crosshair */
+    #crosshair {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 6px; height: 6px; background: rgba(0, 255, 204, 0.8); border-radius: 50%;
+      pointer-events: none; z-index: 20; box-shadow: 0 0 8px #00ffcc;
+    }
+
+    /* Sleek Holographic Visor HUD */
+    #hud-visor {
+      position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+      width: 90%; max-width: 1200px; display: flex; justify-content: space-between;
+      align-items: flex-end; pointer-events: none; z-index: 30;
+      font-family: monospace; color: #00ffcc; text-shadow: 0 0 6px rgba(0,255,204,0.5);
+    }
+    .hud-panel {
+      background: rgba(2, 12, 22, 0.6); border: 1px solid rgba(0, 255, 204, 0.3);
+      padding: 12px 25px; border-radius: 4px; backdrop-filter: blur(4px);
+    }
+    .hud-label { font-size: 11px; color: #88aabb; letter-spacing: 2px; text-transform: uppercase; }
+    .hud-value { font-size: 28px; font-weight: bold; font-family: sans-serif; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.min.js"></script>
+</head>
+<body>
+
+  <div id="overlay">
+    <h1 style="font-size: 42px; letter-spacing: 6px; margin: 0 0 10px 0; font-weight: 300; text-transform: uppercase;">Atlantic Vanguard: Hull Breacher</h1>
+    <p style="color: #668899; letter-spacing: 2px; font-size: 14px; margin-bottom: 40px;">GRAPHICAL ENGINE VERIFICATION: RE-REALISM PROTOTYPE</p>
+    <button class="btn-deploy" onclick="initEngine()">Deploy Systems</button>
+  </div>
+
+  <div id="crosshair"></div>
+
+  <div id="hud-visor">
+    <div class="hud-panel">
+      <div class="hud-label">Hull Signatures</div>
+      <div id="hp-display" class="hud-value">100%</div>
+    </div>
+    <div class="hud-panel" style="text-align: right;">
+      <div class="hud-label">Eliminated Threats</div>
+      <div id="score-display" class="hud-value" style="color: #ffffff; text-shadow: 0 0 6px #fff;">00</div>
+    </div>
+  </div>
+
+<script>
+// ======================================================
+// ================= HULL ARCHITECTURE MAP ==============
+// ======================================================
+const HULL_MAP = [
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  [1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1],
+  [1,0,1,1,1,0,1,0,1,1,1,1,1,1,0,1],
+  [1,0,1,0,0,0,0,0,0,0,0,1,0,0,0,1],
+  [1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,1],
+  [1,0,0,0,1,0,0,0,0,1,0,0,0,1,0,1],
+  [1,1,1,0,1,0,1,1,0,1,1,1,0,1,0,1],
+  [1,0,0,0,0,0,1,0,0,0,0,1,0,0,0,1],
+  [1,0,1,1,1,1,1,0,1,1,0,1,1,1,0,1],
+  [1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1],
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+];
+const SCALE = 12; // Dimensional geometry scale for high bulkheads
+
+// ======================================================
+// ================= PROCEDURAL HD PANEL TEXTURES =======
+// ======================================================
+function createCinematicMetalTexture() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 512; canvas.height = 512;
+  const ctx = canvas.getContext('2d');
+  
+  // Base dark military slate steel
+  ctx.fillStyle = '#1c2229'; ctx.fillRect(0, 0, 512, 512);
+  
+  // Add riveted hull panel divider lines
+  ctx.strokeStyle = '#0f1318'; ctx.lineWidth = 4;
+  ctx.strokeRect(10, 10, 492, 492);
+  ctx.beginPath(); ctx.moveTo(256, 10); ctx.lineTo(256, 502); ctx.stroke();
+  
+  // Metallic micro-scratching layers
+  for (let i = 0; i < 3000; i++) {
+    ctx.fillStyle = Math.random() > 0.5 ? 'rgba(255,255,255,0.015)' : 'rgba(0,0,0,0.15)';
+    ctx.fillRect(Math.random() * 512, Math.random() * 512, Math.random() * 3 + 1, 1);
+  }
+  
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.generateMipmaps = true; // Smooth anti-aliasing generation textures
+  return texture;
+}
+
+// ======================================================
+// ================= SYSTEM BUILD INTERFACES ============
+// ======================================================
+let scene, camera, renderer, clock;
+let player = { pos: new THREE.Vector3(18, 4, 18), rot: new THREE.Vector3(), speed: 0.18, health: 100 };
+let keys = {}, mouseDelta = { x: 0, y: 0 };
+let isEngineActive = false;
+
+const walls = [];
+const drones = [];
+const particlePool = [];
+let weaponGroup, muzzleFlashLight, ambientPulse;
+let fragCounter = 0;
+
+function initEngine() {
+  document.getElementById('overlay').style.display = 'none';
+  document.body.requestPointerLock();
+
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x02050a);
+  scene.fog = new THREE.FogExp2(0x02050a, 0.022); // Deep volumetric atmosphere
+
+  camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 500);
+  camera.position.copy(player.pos);
+  scene.add(camera);
+
+  renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Dynamic sharp anti-aliasing profile
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Ultra soft smooth shadow arrays
+  document.body.appendChild(renderer.domElement);
+
+  clock = new THREE.Clock();
+
+  // Next-Gen Cinematic Light Rigging
+  const globalAmbient = new THREE.AmbientLight(0x08111a, 0.4);
+  scene.add(globalAmbient);
+
+  // Dynamic tactical warning sirens casting environmental sweeps
+  ambientPulse = new THREE.PointLight(0x0055ff, 1.5, 80);
+  ambientPulse.position.set(40, 10, 40);
+  scene.add(ambientPulse);
+
+  muzzleFlashLight = new THREE.PointLight(0xffaa22, 0, 45);
+  muzzleFlashLight.castShadow = true;
+  scene.add(muzzleFlashLight);
+
+  buildCinematicEnvironment();
+  assembleHighTechWeapon();
+  populateThreatMatrices();
+
+  // Input triggers
+  window.addEventListener('keydown', e => keys[e.code] = true);
+  window.addEventListener('keyup', e => keys[e.code] = false);
+  document.addEventListener('mousemove', handleCinematicLook);
+  window.addEventListener('mousedown', fireWeaponSystem);
+
+  isEngineActive = true;
+  renderLoop();
+}
+
+// ======================================================
+// ================= HIGH RES WORLD GENERATION ==========
+// ======================================================
+function buildCinematicEnvironment() {
+  const metalTex = createCinematicMetalTexture();
+  const wallGeo = new THREE.BoxGeometry(SCALE, SCALE, SCALE);
+  
+  // AAA Standard physically-based metallic material pipelines
+  const hullMaterial = new THREE.MeshStandardMaterial({
+    map: metalTex,
+    metalness: 0.85,
+    roughness: 0.18,
+    bumpScale: 0.05
+  });
+
+  for (let r = 0; r < HULL_MAP.length; r++) {
+    for (let c = 0; c < HULL_MAP[r].length; c++) {
+      if (HULL_MAP[r][c] === 1) {
+        const block = new THREE.Mesh(wallGeo, hullMaterial);
+        block.position.set(c * SCALE, SCALE / 2, r * SCALE);
+        block.castShadow = true;
+        block.receiveShadow = true;
+        scene.add(block);
+        walls.push(block);
+      } else {
+        // Drop tech panel lights into dark paths occasionally
+        if (Math.random() < 0.12) {
+          const corridorLight = new THREE.PointLight(0x00ffcc, 0.8, 25);
+          corridorLight.position.set(c * SCALE, SCALE - 2, r * SCALE);
+          scene.add(corridorLight);
+        }
+      }
+    }
+  }
+
+  // Dark industrial plating floor
+  const floorGeo = new THREE.PlaneGeometry(500, 500);
+  const floorMat = new THREE.MeshStandardMaterial({ color: 0x0a0d12, metalness: 0.9, roughness: 0.25 });
+  const floor = new THREE.Mesh(floorGeo, floorMat);
+  floor.rotation.x = -Math.PI / 2;
+  floor.receiveShadow = true;
+  scene.add(floor);
+
+  // Ceilings
+  const ceilMat = new THREE.MeshStandardMaterial({ color: 0x07090c, metalness: 0.7, roughness: 0.4 });
+  const ceiling = new THREE.Mesh(floorGeo, ceilMat);
+  ceiling.rotation.x = Math.PI / 2;
+  ceiling.position.y = SCALE;
+  ceiling.receiveShadow = true;
+  scene.add(ceiling);
+}
+
+// ======================================================
+// ================= HIGH-TECH WEAPON ARCHITECTURE ======
+// ======================================================
+function assembleHighTechWeapon() {
+  weaponGroup = new THREE.Group();
+
+  const frameMat = new THREE.MeshStandardMaterial({ color: 0x11161b, metalness: 0.9, roughness: 0.1 });
+  const coreGlowMat = new THREE.MeshBasicMaterial({ color: 0x00ffcc });
+
+  // Sleek Rail Chassis
+  const mainChassis = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.16, 1.8), frameMat);
+  mainChassis.position.set(0.3, -0.28, -0.8);
+  weaponGroup.add(mainChassis);
+
+  // Holographic Capacitor Rail Lines
+  const railGlow1 = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.02, 1.2), coreGlowMat);
+  railGlow1.position.set(0.22, -0.24, -1.0);
+  const railGlow2 = railGlow1.clone();
+  railGlow2.position.x = 0.38;
+  weaponGroup.add(railGlow1, railGlow2);
+
+  camera.add(weaponGroup);
+}
+
+// ======================================================
+// ================= THREAT AI DRONES ===================
+// ======================================================
+function populateThreatMatrices() {
+  const droneGeo = new THREE.SphereGeometry(1.6, 32, 32);
+  const droneMat = new THREE.MeshStandardMaterial({
+    color: 0x222b35,
+    metalness: 0.9,
+    roughness: 0.1,
+    emissive: 0xff0033,
+    emissiveIntensity: 0.5
+  });
+
+  const triggerPoints = [[36, 48], [84, 24], [144, 72], [108, 96]];
+
+  triggerPoints.forEach(pt => {
+    const droneMesh = new THREE.Mesh(droneGeo, droneMat);
+    droneMesh.position.set(pt[0], 3.5, pt[1]);
+    droneMesh.castShadow = true;
+    scene.add(droneMesh);
+
+    // Glowing core target array inside drone matrix
+    const coreLight = new THREE.PointLight(0xff0033, 1.2, 15);
+    coreLight.position.set(0, 0, 0);
+    droneMesh.add(coreLight);
+
+    drones.push({
+      mesh: droneMesh,
+      health: 60,
+      speed: 0.05,
+      light: coreLight
+    });
+  });
+}
+
+// ======================================================
+// ================= CONTROLS INTERFACING ===============
+// ======================================================
+function handleCinematicLook(e) {
+  if (document.pointerLockElement !== document.body) return;
+  player.rot.y -= e.movementX * 0.0022;
+  player.rot.x -= e.movementY * 0.0022;
+  player.rot.x = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, player.rot.x));
+}
+
+function fireWeaponSystem() {
+  if (document.pointerLockElement !== document.body || player.health <= 0) return;
+
+  // Ultra crisp linear translation recoil shifts
+  weaponGroup.position.z += 0.35;
+  weaponGroup.position.y += 0.05;
+  muzzleFlashLight.intensity = 6.0;
+  muzzleFlashLight.position.copy(camera.position).add(new THREE.Vector3(0.3, -0.2, -0.5).applyQuaternion(camera.quaternion));
+
+  const raycaster = new THREE.Raycaster();
+  raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
+
+  const targetMeshes = drones.map(d => d.mesh);
+  const hits = raycaster.intersectObjects(targetMeshes);
+
+  if (hits.length > 0) {
+    const targetObj = hits[0].object;
+    const idx = drones.findIndex(d => d.mesh === targetObj);
+
+    if (idx !== -1) {
+      const drone = drones[idx];
+      drone.health -= 20;
+      generateCinematicSparks(hits[0].point, 0xff0033, 12); // Neon blood flashes
+
+      if (drone.health <= 0) {
+        generateCinematicSparks(drone.mesh.position, 0xffaa00, 40); // Massive explosive plasma bursts
+        scene.remove(drone.mesh);
+        drones.splice(idx, 1);
+        fragCounter++;
+        document.getElementById('score-display').innerText = fragCounter < 10 ? "0" + fragCounter : fragCounter;
+      }
+    }
+  } else {
+    const wallHits = raycaster.intersectObjects(walls);
+    if (wallHits.length > 0) {
+      generateCinematicSparks(wallHits[0].point, 0x00ffcc, 6); // High energy laser ricochet sparks
+    }
+  }
+}
+
+function generateCinematicSparks(pos, colorHex, count) {
+  const pGeo = new THREE.BoxGeometry(0.08, 0.08, 0.08);
+  const pMat = new THREE.MeshBasicMaterial({ color: colorHex });
+
+  for (let i = 0; i < count; i++) {
+    const p = new THREE.Mesh(pGeo, pMat);
+    p.position.copy(pos);
+    scene.add(p);
+
+    particlePool.push({
+      mesh: p,
+      vel: new THREE.Vector3((Math.random() - 0.5) * 0.5, (Math.random() - 0.3) * 0.4, (Math.random() - 0.5) * 0.5),
+      life: 25 + Math.random() * 20
+    });
+  }
+}
+
+// ======================================================
+// ================= ENGINE LIFECYCLE RENDER ============
+// ======================================================
+function renderLoop() {
+  if (!isEngineActive) return;
+  requestAnimationFrame(renderLoop);
+
+  const delta = clock.getDelta();
+  const time = clock.getElapsedTime();
+
+  if (player.health > 0) {
+    // Sync Viewport Orientations
+    camera.rotation.set(0, 0, 0);
+    camera.rotation.y = player.rot.y;
+    camera.rotation.x = player.rot.x;
+
+    // Movement Vectors Calculation
+    const move = new THREE.Vector3();
+    if (keys['KeyW']) move.z -= 1;
+    if (keys['KeyS']) move.z += 1;
+    if (keys['KeyA']) move.x -= 1;
+    if (keys['KeyD']) move.x += 1;
+
+    move.applyAxisAngle(new THREE.Vector3(0, 1, 0), player.rot.y);
+    move.normalize().multiplyScalar(player.speed);
+
+    // Collision Matrix Verifications
+    const targetX = player.pos.x + move.x;
+    const targetZ = player.pos.z + move.z;
+    const checkGridX = Math.floor((targetX + SCALE / 2) / SCALE);
+    const checkGridZ = Math.floor((targetZ + SCALE / 2) / SCALE);
+
+    if (HULL_MAP[checkGridZ] && HULL_MAP[checkGridZ][checkGridX] !== 1) {
+      player.pos.x = targetX;
+      player.pos.z = targetZ;
+    }
+
+    // Weapon Sway Smoothing Loops
+    let weaponSwayY = 0;
+    let weaponSwayX = 0;
+    if (keys['KeyW'] || keys['KeyS'] || keys['KeyA'] || keys['KeyD']) {
+      weaponSwayY = Math.sin(time * 9) * 0.015;
+      weaponSwayX = Math.cos(time * 4.5) * 0.02;
+    }
+
+    weaponGroup.position.x = THREE.MathUtils.lerp(weaponGroup.position.x, weaponSwayX, 0.1);
+    weaponGroup.position.y = THREE.MathUtils.lerp(weaponGroup.position.y, weaponSwayY, 0.1);
+    weaponGroup.position.z = THREE.MathUtils.lerp(weaponGroup.position.z, 0, 0.08);
+
+    camera.position.copy(player.pos);
+    camera.position.y += Math.sin(time * 9) * 0.02; // Smooth breathing look
+
+    muzzleFlashLight.intensity = THREE.MathUtils.lerp(muzzleFlashLight.intensity, 0, 0.15);
+  }
+
+  // Pulsing Alarm Lighting Updates
+  ambientPulse.intensity = 1.5 + Math.sin(time * 3) * 1.0;
+
+  // AI Threat Tracking Loops
+  drones.forEach(drone => {
+    drone.mesh.lookAt(player.pos.x, drone.mesh.position.y, player.pos.z);
+    
+    const trackVector = new THREE.Vector3().subVectors(player.pos, drone.mesh.position);
+    trackVector.y = 0;
+    const distance = trackVector.length();
+    trackVector.normalize();
+
+    if (distance > 7.0 && player.health > 0) {
+      drone.mesh.position.add(trackVector.multiplyScalar(drone.speed));
+      drone.mesh.position.y = 3.5 + Math.sin(time * 3 + drone.mesh.position.x) * 0.15;
+    } else if (player.health > 0) {
+      // Dynamic Radiation Damage
+      player.health = Math.max(0, player.health - 0.4);
+      document.getElementById('hp-display').innerText = Math.floor(player.health) + "%";
+
+      if (player.health <= 0) {
+        document.getElementById('hp-display').style.color = "#ff0033";
+        document.getElementById('hp-display').innerText = "CRITICAL FAILURE";
+        alert("CRITICAL LOSS OF LIFE-SIGNS. RE-INITIALIZING SYSTEM INFRASTRUCTURE.");
+        window.location.reload();
+      }
+    }
+  });
+
+  // Particle Engine Simulation
+  for (let i = particlePool.length - 1; i >= 0; i--) {
+    const spark = particlePool[i];
+    spark.mesh.position.add(spark.vel);
+    spark.vel.y -= 0.008; // Cinematic gravity
+    spark.life--;
+
+    if (spark.life <= 0) {
+      scene.remove(spark.mesh);
+      particlePool.splice(i, 1);
+    }
+  }
+
+  renderer.render(scene, camera);
+}
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+</body>
+</html>
