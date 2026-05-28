@@ -3,89 +3,159 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SLUDGECORE // E1M1: RUNTIME ERROR</title>
+  <title>SLUDGECORE // COMMS OVERRIDE</title>
   <style>
     body, html { margin: 0; padding: 0; overflow: hidden; width: 100%; height: 100%; background: #000; font-family: 'Impact', 'Arial Black', sans-serif; user-select: none; }
     
-    /* Forces the low-res canvas to scale with chunky, non-blurred pixels */
     canvas {
       width: 100vw !important;
       height: calc(100vh - 80px) !important;
-      image-rendering: -moz-crisp-edges;
-      image-rendering: -webkit-crisp-edges;
       image-rendering: pixelated;
-      image-rendering: crisp-edges;
       display: block;
     }
 
-    /* 90s Shareware DOS Menu */
-    #overlay {
+    /* DOS Network Terminal Lobby Browser */
+    #terminal-lobby {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: #0b0d0c; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; z-index: 50;
-      color: #00ff00; text-align: center; border: 8px double #334433; box-sizing: border-box;
+      background: #060807; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; z-index: 60;
+      color: #00ff00; font-family: monospace; box-sizing: border-box; padding: 20px;
     }
-    .btn-dos {
-      background: #18221c; color: #ffff00; padding: 12px 35px; font-size: 22px;
-      border: 4px solid #00ff00; font-weight: bold; cursor: pointer;
-      font-family: monospace; text-transform: uppercase;
-    }
-    .btn-dos:hover { background: #ffff00; color: #000; border-color: #fff; }
+    .terminal-title { font-size: 42px; color: #ff3300; font-family: 'Impact'; text-shadow: 3px 3px #3a0000; letter-spacing: 3px; margin-bottom: 5px; }
+    .server-table { width: 80%; max-width: 700px; border-collapse: collapse; margin-top: 20px; font-size: 14px; background: #0c0f0d; border: 2px solid #00ff00; }
+    .server-table th, .server-table td { padding: 12px; text-align: left; border: 1px solid #223322; }
+    .server-table th { background: #141a16; color: #ffff00; }
+    .server-table tr:hover { background: #1a241e; }
+    .btn-connect { background: #00ff00; color: #000; border: none; padding: 6px 12px; font-weight: bold; cursor: pointer; font-family: monospace; }
+    .btn-connect:hover { background: #ffff00; }
 
-    /* Doom-Style Heavy Bottom Status Bar */
+    /* Combat Kill Feed */
+    #kill-feed {
+      position: absolute; top: 20px; right: 20px; width: 300px;
+      font-family: monospace; font-size: 12px; color: #ffaa00;
+      text-align: right; pointer-events: none; z-index: 30;
+      display: flex; flex-direction: column; gap: 4px;
+      text-shadow: 1px 1px #000;
+    }
+
+    /* Text Chat Box Array */
+    #chat-box {
+      position: absolute; bottom: 100px; left: 20px; width: 360px;
+      height: 160px; pointer-events: none; z-index: 35;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      font-family: monospace; font-size: 13px; text-shadow: 1px 1px #000;
+    }
+    #chat-log {
+      overflow: hidden; display: flex; flex-direction: column; gap: 3px; color: #ffffff;
+    }
+    #chat-input {
+      background: #111; border: 2px solid #ff3300; color: #00ff00;
+      padding: 6px; font-family: monospace; font-size: 13px; outline: none;
+      margin-top: 5px; pointer-events: auto; display: none; width: 100%; box-sizing: border-box;
+    }
+
+    /* Cooldown Overlay Alert */
+    #cooldown-alert {
+      position: absolute; top: 60%; left: 50%; transform: translate(-50%, -50%);
+      font-family: monospace; font-size: 14px; color: #ff3333;
+      font-weight: bold; display: none; z-index: 25; letter-spacing: 2px;
+      text-shadow: 1px 1px #000; background: rgba(0,0,0,0.6); padding: 4px 10px; border: 1px solid #ff3333;
+    }
+
+    /* Doom-Style Status Bar */
     #status-bar {
       position: absolute; bottom: 0; left: 0; width: 100%; height: 80px;
       background: #2b2b2a; border-top: 6px solid #444443;
-      display: none; grid-template-columns: repeat(4, 1fr);
+      display: none; grid-template-columns: repeat(5, 1fr);
       align-items: center; text-align: center; z-index: 10;
-      box-sizing: border-box; color: #ff3333; font-size: 16px; letter-spacing: 1px;
-      border-bottom: 4px solid #111;
+      box-sizing: border-box; color: #ff3333; font-size: 16px;
     }
-    .status-node {
-      border-right: 4px solid #1c1c1b; border-left: 2px solid #3d3d3c; height: 100%; display: flex; flex-direction: column; justify-content: center;
-    }
+    .status-node { border-right: 4px solid #1c1c1b; border-left: 2px solid #3d3d3c; height: 100%; display: flex; flex-direction: column; justify-content: center; }
     .status-val { font-size: 32px; color: #ff0000; font-weight: bold; text-shadow: 2px 2px #440000; font-family: monospace; }
     .status-title { font-size: 11px; color: #8a8a85; font-family: monospace; margin-bottom: 2px; }
 
-    #crosshair {
-      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      width: 4px; height: 4px; background: #ff0000; pointer-events: none; z-index: 20;
-    }
+    #crosshair { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 4px; height: 4px; background: #ff0000; pointer-events: none; z-index: 20; }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.min.js"></script>
 </head>
 <body>
 
-  <div id="overlay">
-    <h1 style="font-size: 56px; margin: 0 0 5px 0; color: #ff3300; text-shadow: 4px 4px #4a0000;">SLUDGECORE</h1>
-    <p style="color: #889988; font-family: monospace; font-size: 13px; margin-bottom: 40px;">V1.0 BETA SHAREWARE ENGINE // RE-GRIT VERIFICATION</p>
-    <button class="btn-dos" onclick="initEngine()">M1: BOOT ENGINE</button>
+  <!-- LOBBY SELECTION DISPLAY -->
+  <div id="terminal-lobby">
+    <div class="terminal-title">SLUDGECORE NETWORK TERMINAL</div>
+    <div style="color: #889988; margin-bottom: 15px;">DIAL-UP NODE SELECTION // MULTIPLAYER SIMULATION INTERFACE</div>
+    
+    <table class="server-table">
+      <thead>
+        <tr>
+          <th>NODE ID / LOCATION</th>
+          <th>POPULATION</th>
+          <th>LATENCY</th>
+          <th>ACTION</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>[US_WEST] TOXIC_SUMP_BETA</td>
+          <td>5 / 8 IN_MATCH</td>
+          <td>42ms</td>
+          <td><button class="btn-connect" onclick="jackInNode('TOXIC_SUMP_BETA', 42)">JACK_IN</button></td>
+        </tr>
+        <tr>
+          <td>[CO_LOCAL] THORNTON_GRID_01</td>
+          <td>7 / 8 HIGH_ACTIVITY</td>
+          <td>18ms</td>
+          <td><button class="btn-connect" onclick="jackInNode('THORNTON_GRID_01', 18)">JACK_IN</button></td>
+        </tr>
+        <tr>
+          <td>[EU_NORTH] BROKEN_PIPE_LAN</td>
+          <td>3 / 8 IDLE</td>
+          <td>115ms</td>
+          <td><button class="btn-connect" onclick="jackInNode('BROKEN_PIPE_LAN', 115)">JACK_IN</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="margin-top: 30px; color: #556655; font-size: 11px;">COMMS NOTE: PRESS [ENTER] FOR TEXT CHAT // HOLD [V] TO TRANSMIT VOICE MATRIX DATA.</div>
   </div>
 
   <div id="crosshair"></div>
+  <div id="kill-feed"></div>
+  <div id="cooldown-alert">BOLT_CYCLE_LOCKED</div>
 
+  <!-- TEXT CHAT LOG OVERLAY CONTAINER -->
+  <div id="chat-box">
+    <div id="chat-log"></div>
+    <input type="text" id="chat-input" placeholder="SEND LINK STREAM DATA..." maxlength="50">
+  </div>
+
+  <!-- STATUS DASHBOARD -->
   <div id="status-bar">
     <div class="status-node">
-      <span class="status-title">AMMO CODE</span>
+      <span class="status-title">AMMO CAP</span>
       <span class="status-val" style="color: #ffff00;">INF</span>
     </div>
     <div class="status-node">
-      <span class="status-title">HEALTH Vitals</span>
+      <span class="status-title">LINK VITALS</span>
       <span id="hp-display" class="status-val" style="color: #00ff00;">100%</span>
     </div>
-    <div class="status-node" style="background: #1f1f1e;">
-      <span style="color: #ff5500; font-size: 20px; font-weight: bold; letter-spacing: 2px;">SLUDGE</span>
+    
+    <!-- DYNAMIC VOICE TRANSCEIVER NODE -->
+    <div class="status-node" id="voice-node" style="background: #1f1f1e; border: 1px dashed #444;">
+      <span class="status-title" id="voice-label" style="color: #888;">VOICE MATRIX</span>
+      <span id="voice-status" style="color: #666; font-size: 15px; font-weight: bold; letter-spacing: 1px; font-family: monospace;">STDBY [V]</span>
+    </div>
+
+    <div class="status-node">
+      <span class="status-title">FRAG CODE</span>
+      <span id="score-display" class="status-val" style="color: #00ffff;">00</span>
     </div>
     <div class="status-node" style="border-right: none;">
-      <span class="status-title">FRAG COUNT</span>
-      <span id="score-display" class="status-val" style="color: #00ffff;">00</span>
+      <span class="status-title">SIGNAL PING</span>
+      <span id="ping-display" class="status-val" style="color: #ffaa00; font-size: 24px;">0ms</span>
     </div>
   </div>
 
 <script>
-// ======================================================
-// ================= INDUSTRIAL LEVEL LAYOUT ============
-// ======================================================
 const LEVEL_GRID = [
   [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
   [1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1],
@@ -100,108 +170,91 @@ const LEVEL_GRID = [
   [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
 ];
 const SCALE = 10;
+const pixelScale = 3.5; 
 
-// ======================================================
-// ================= 8-BIT PROCEDURAL TEXTURES ==========
-// ======================================================
+const RIVAL_NAMES = ['DoomGuy420', 'X_Sludge_X', 'NutBreaker', 'GoreSpit', 'VoxelKing', 'CorrosionMan', 'Marrow_Link', 'CyberPlague'];
+const TRASH_TALK = ['Too slow, scrap metal.', 'Get out of my grid layout.', 'Absolute system failure.', 'Nice connection latency.', 'Hull breached.', 'Lining up the next core burst.'];
+
 function generateGrittyTexture() {
-  const canvas = document.createElement('canvas');
-  canvas.width = 64; canvas.height = 64; // Low-res 64x64 texture map sizing
+  const canvas = document.createElement('canvas'); canvas.width = 64; canvas.height = 64;
   const ctx = canvas.getContext('2d');
-  
-  // Base muddy rusted sludge green
   ctx.fillStyle = '#2b2e24'; ctx.fillRect(0, 0, 64, 64);
-  
-  // Generate ugly, crunchy pixels, rust leaks, and noise streaks
   for (let x = 0; x < 64; x += 2) {
     for (let y = 0; y < 64; y += 2) {
       const rand = Math.random();
-      if (rand > 0.92) {
-        ctx.fillStyle = '#11140e'; // Corrosion spot
-      } else if (rand > 0.85) {
-        ctx.fillStyle = '#4a3d2c'; // Rusted orange leak
-      } else if (rand > 0.65) {
-        ctx.fillStyle = '#32372a'; // Minor variance
-      } else {
-        ctx.fillStyle = '#2b2e24';
-      }
+      if (rand > 0.92) ctx.fillStyle = '#11140e';
+      else if (rand > 0.85) ctx.fillStyle = '#4a3d2c';
+      else if (rand > 0.65) ctx.fillStyle = '#32372a';
+      else ctx.fillStyle = '#2b2e24';
       ctx.fillRect(x, y, 2, 2);
     }
   }
-
-  // Draw chunky horizontal iron rivets block lines
-  ctx.fillStyle = '#181b13';
-  ctx.fillRect(0, 0, 64, 4);
-  ctx.fillRect(0, 30, 64, 4);
-  ctx.fillRect(0, 60, 64, 4);
-
+  ctx.fillStyle = '#181b13'; ctx.fillRect(0, 0, 64, 4); ctx.fillRect(0, 30, 64, 4); ctx.fillRect(0, 60, 64, 4);
   const texture = new THREE.CanvasTexture(canvas);
-  texture.magFilter = THREE.NearestFilter; // Forces razor sharp pixelation without smoothing interpolation
-  texture.minFilter = THREE.NearestFilter;
+  texture.magFilter = THREE.NearestFilter; texture.minFilter = THREE.NearestFilter;
   return texture;
 }
 
-// ======================================================
-// ================= ENGINE CONFIGURATIONS ==============
-// ======================================================
 let scene, camera, renderer, clock;
 let player = { pos: new THREE.Vector3(15, 3.5, 15), rot: new THREE.Vector3(), speed: 0.15, health: 100 };
 let keys = {};
 let isEngineActive = false;
+let isChatOpen = false;
+
+let canShoot = true;
+const FIRE_DELAY = 980; 
 
 const walls = [];
-const meatDrones = [];
+const rivals = [];
 const activeSparks = [];
 let weaponGroup, muzzleFlashObj;
 let killCount = 0;
 
-// PIXEL SCALE DOWNGRADE: Higher number = chunkier, rougher pixels
-const pixelScale = 3.5; 
-
-function initEngine() {
-  document.getElementById('overlay').style.display = 'none';
+function jackInNode(nodeName, pingVal) {
+  document.getElementById('terminal-lobby').style.display = 'none';
   document.getElementById('status-bar').style.display = 'grid';
+  document.getElementById('ping-display').innerText = pingVal + "ms";
   document.body.requestPointerLock();
 
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0x050605);
-  scene.fog = new THREE.FogExp2(0x050605, 0.045); // Aggressive 90s drop-off fog depth limits
+  scene.fog = new THREE.FogExp2(0x050605, 0.045);
 
   camera = new THREE.PerspectiveCamera(55, window.innerWidth / (window.innerHeight - 80), 0.1, 300);
   camera.position.copy(player.pos);
   scene.add(camera);
 
-  renderer = new THREE.WebGLRenderer({ antialias: false }); // Completely bypass anti-aliasing passes
+  renderer = new THREE.WebGLRenderer({ antialias: false });
   renderer.setSize(window.innerWidth / pixelScale, (window.innerHeight - 80) / pixelScale, false);
   document.body.appendChild(renderer.domElement);
 
   clock = new THREE.Clock();
 
-  // Low-tech flat lighting setups
-  const ambientLight = new THREE.AmbientLight(0x777777); 
+  const ambientLight = new THREE.AmbientLight(0x777777);
   scene.add(ambientLight);
 
   buildGrittyWorld();
   buildCenteredWeapon();
-  spawnMeatDrones();
+  populateRivalInfiltrators();
 
-  window.addEventListener('keydown', e => keys[e.code] = true);
-  window.addEventListener('keyup', e => keys[e.code] = false);
+  // Integrated Matrix Listeners
+  window.addEventListener('keydown', handleKeySystemDown);
+  window.addEventListener('keyup', handleKeySystemUp);
   document.addEventListener('mousemove', handleGrittyLook);
   window.addEventListener('mousedown', fireWeaponSystem);
 
   isEngineActive = true;
   mainEngineLoop();
+
+  // Background activity timers
+  setInterval(simulateBackgroundFrags, 4000);
+  setInterval(simulateNetworkChat, 6000);
+  setInterval(simulateIncomingVoiceComms, 11000);
 }
 
-// ======================================================
-// ================= ENVIRONMENT ARCHITECTURE ===========
-// ======================================================
 function buildGrittyWorld() {
   const sludgeTex = generateGrittyTexture();
   const blockGeo = new THREE.BoxGeometry(SCALE, SCALE, SCALE);
-  
-  // Lambert material responds crudely to light, keeping rendering fast and unpolished
   const wallMat = new THREE.MeshLambertMaterial({ map: sludgeTex });
 
   for (let r = 0; r < LEVEL_GRID.length; r++) {
@@ -215,126 +268,238 @@ function buildGrittyWorld() {
     }
   }
 
-  // Dirty brown-grey floor canvas texture map
-  const floorCanvas = document.createElement('canvas');
-  floorCanvas.width = 32; floorCanvas.height = 32;
-  const fCtx = floorCanvas.getContext('2d');
-  fCtx.fillStyle = '#1a1816'; fCtx.fillRect(0,0,32,32);
+  const floorCanvas = document.createElement('canvas'); floorCanvas.width = 32; floorCanvas.height = 32;
+  const fCtx = floorCanvas.getContext('2d'); fCtx.fillStyle = '#1a1816'; fCtx.fillRect(0,0,32,32);
   for(let i=0; i<200; i++) { fCtx.fillStyle = Math.random() > 0.5 ? '#11100f' : '#22201e'; fCtx.fillRect(Math.random()*32, Math.random()*32, 1, 1); }
   const floorTex = new THREE.CanvasTexture(floorCanvas);
-  floorTex.wrapS = THREE.RepeatWrapping; floorTex.wrapT = THREE.RepeatWrapping;
-  floorTex.repeat.set(40, 40); floorTex.magFilter = THREE.NearestFilter;
+  floorTex.wrapS = THREE.RepeatWrapping; floorTex.wrapT = THREE.RepeatWrapping; floorTex.repeat.set(40, 40); floorTex.magFilter = THREE.NearestFilter;
 
-  const floorGeo = new THREE.PlaneGeometry(500, 500);
-  const floorMat = new THREE.MeshLambertMaterial({ map: floorTex });
-  const floor = new THREE.Mesh(floorGeo, floorMat);
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(500, 500), new THREE.MeshLambertMaterial({ map: floorTex }));
   floor.rotation.x = -Math.PI / 2;
   scene.add(floor);
 
-  // Black ceiling capping
-  const ceilingMat = new THREE.MeshBasicMaterial({ color: 0x090909 });
-  const ceiling = new THREE.Mesh(floorGeo, ceilingMat);
-  ceiling.rotation.x = Math.PI / 2;
-  ceiling.position.y = SCALE;
+  const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(500, 500), new THREE.MeshBasicMaterial({ color: 0x090909 }));
+  ceiling.rotation.x = Math.PI / 2; ceiling.position.y = SCALE;
   scene.add(ceiling);
 }
 
-// ======================================================
-// ================= CENTERED SPRITE WEAPON =============
-// ======================================================
 function buildCenteredWeapon() {
   weaponGroup = new THREE.Group();
-
   const gunMat = new THREE.MeshBasicMaterial({ color: 0x444845 });
   const barrelMat = new THREE.MeshBasicMaterial({ color: 0x1f2120 });
 
-  // Boxy, chunky pixel-art style gun framework
   const baseFrame = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.35, 0.6), gunMat);
   const barrel = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.06, 0.5), barrelMat);
   barrel.position.set(0, 0.1, -0.4);
   baseFrame.add(barrel);
 
-  // Big pixelated yellow box for immediate muzzle flash frames
-  muzzleFlashObj = new THREE.Mesh(
-    new THREE.BoxGeometry(0.2, 0.2, 0.2),
-    new THREE.MeshBasicMaterial({ color: 0xffcc00 })
-  );
+  muzzleFlashObj = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, 0.2), new THREE.MeshBasicMaterial({ color: 0xffcc00 }));
   muzzleFlashObj.position.set(0, 0.1, -0.7);
   muzzleFlashObj.visible = false;
   baseFrame.add(muzzleFlashObj);
 
-  // LOCK DEAD CENTER AT SCREEN BOTTOM (Classic Doom Style positioning)
   baseFrame.position.set(0, -0.28, -0.55);
   weaponGroup.add(baseFrame);
   camera.add(weaponGroup);
 }
 
-// ======================================================
-// ================= SPAWN ENEMIES ======================
-// ======================================================
-function spawnMeatDrones() {
-  // Low-poly voxel chunks representing mutated engine errors
-  const droneGeo = new THREE.BoxGeometry(2.2, 2.2, 2.2);
-  const droneMat = new THREE.MeshBasicMaterial({ color: 0x7a1f1d }); // Dried meat red
+function populateRivalInfiltrators() {
+  const rivalGeo = new THREE.BoxGeometry(2.0, 4.0, 2.0);
+  const coreMat = new THREE.MeshBasicMaterial({ color: 0x5a635c }); 
 
-  const positions = [[30, 40], [70, 20], [120, 50], [90, 80]];
+  const spawns = [[40, 30], [80, 20], [120, 60], [90, 80], [30, 70]];
 
-  positions.forEach(pos => {
-    const mesh = new THREE.Mesh(droneGeo, droneMat);
-    mesh.position.set(pos[0], 3.0, pos[1]);
+  spawns.forEach((pos, idx) => {
+    const mesh = new THREE.Mesh(rivalGeo, coreMat);
+    mesh.position.set(pos[0], 2.0, pos[1]);
     scene.add(mesh);
 
-    // Edge tracking highlight frames
-    const wire = new THREE.Mesh(droneGeo, new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true }));
-    wire.scale.multiplyScalar(1.01);
-    mesh.add(wire);
+    const helmet = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.2, 1.2), new THREE.MeshBasicMaterial({ color: 0x992222 }));
+    helmet.position.set(0, 2.3, 0);
+    mesh.add(helmet);
 
-    meatDrones.push({
+    rivals.push({
       mesh: mesh,
-      health: 50,
-      speed: 0.07
+      name: RIVAL_NAMES[idx % RIVAL_NAMES.length],
+      health: 100,
+      speed: 0.06 + Math.random() * 0.03,
+      targetPos: new THREE.Vector3(pos[0], 2.0, pos[1]),
+      actionTimer: 0
     });
   });
 }
 
 // ======================================================
-// ================= ENGINE OPERATION INTERFACES ========
+// ================= INTERFACE & CONTROLS ===============
 // ======================================================
+function handleKeySystemDown(e) {
+  if (e.code === 'Enter') {
+    e.preventDefault();
+    toggleTextChat();
+    return;
+  }
+  
+  if (isChatOpen) return; // Freeze engine key reading if typing
+
+  keys[e.code] = true;
+
+  // Voice capture system (Push-to-talk matrix)
+  if (e.code === 'KeyV') {
+    const node = document.getElementById('voice-node');
+    node.style.background = '#441111';
+    node.style.borderColor = '#ff3333';
+    document.getElementById('voice-label').style.color = '#ff3333';
+    document.getElementById('voice-status').innerText = 'XMIT...';
+    document.getElementById('voice-status').style.color = '#ff3333';
+  }
+}
+
+function handleKeySystemUp(e) {
+  if (isChatOpen) return;
+  keys[e.code] = false;
+
+  if (e.code === 'KeyV') {
+    const node = document.getElementById('voice-node');
+    node.style.background = '#1f1f1e';
+    node.style.borderColor = '#444';
+    document.getElementById('voice-label').style.color = '#888';
+    document.getElementById('voice-status').innerText = 'STDBY [V]';
+    document.getElementById('voice-status').style.color = '#666';
+  }
+}
+
 function handleGrittyLook(e) {
-  if (document.pointerLockElement !== document.body) return;
+  if (document.pointerLockElement !== document.body || isChatOpen) return;
   player.rot.y -= e.movementX * 0.0035;
   player.rot.x -= e.movementY * 0.0035;
   player.rot.x = Math.max(-Math.PI / 2.5, Math.min(Math.PI / 2.5, player.rot.x));
 }
 
-function fireWeaponSystem() {
-  if (document.pointerLockElement !== document.body || player.health <= 0) return;
+// ======================================================
+// ================= TEXT & VOICE STREAM SYSTEM =========
+// ======================================================
+function toggleTextChat() {
+  const input = document.getElementById('chat-input');
+  if (!isChatOpen) {
+    isChatOpen = true;
+    input.style.display = 'block';
+    input.focus();
+    document.exitPointerLock();
+  } else {
+    isChatOpen = false;
+    if (input.value.trim() !== "") {
+      pushChatMessage('You', input.value, '#00ff00');
+      
+      // Simulate rapid AI counter-response elements
+      setTimeout(() => {
+        const randomRival = RIVAL_NAMES[Math.floor(Math.random() * RIVAL_NAMES.length)];
+        pushChatMessage(randomRival, 'Whatever, sync your line code.', '#ffff00');
+      }, 1200);
+    }
+    input.value = "";
+    input.style.display = 'none';
+    document.body.requestPointerLock();
+  }
+}
 
-  // Immediate snap kickback animations
-  weaponGroup.children[0].position.z += 0.15;
+function pushChatMessage(sender, text, colorHex) {
+  const log = document.getElementById('chat-log');
+  const msg = document.createElement('div');
+  msg.innerHTML = `<span style="color: ${colorHex || '#ffaa00'}">[${sender}]:</span> ${text}`;
+  log.appendChild(msg);
+  if (log.children.length > 6) log.removeChild(log.children[0]);
+}
+
+function simulateNetworkChat() {
+  if (!isEngineActive || isChatOpen) return;
+  const name = RIVAL_NAMES[Math.floor(Math.random() * RIVAL_NAMES.length)];
+  const line = TRASH_TALK[Math.floor(Math.random() * TRASH_TALK.length)];
+  pushChatMessage(name, line, '#ff5555');
+}
+
+// 1993 Synthesizer Audio Filter Simulator
+function emitRadioVoice(phrase) {
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel(); // Drop older sound lines
+  
+  const synth = new SpeechSynthesisUtterance(phrase);
+  // Scan for low, deep pitch variations to model radio noise
+  synth.pitch = 0.4;
+  synth.rate = 1.1; 
+  window.speechSynthesis.speak(synth);
+}
+
+function simulateIncomingVoiceComms() {
+  if (!isEngineActive || player.health <= 0) return;
+  const targetName = RIVAL_NAMES[Math.floor(Math.random() * RIVAL_NAMES.length)];
+  
+  const voiceLines = [
+    "Cover the southern core corridor",
+    "Target spotted near baseline wall",
+    "My channel link is losing sync",
+    "Inbound plasma fire down center map"
+  ];
+  const phrase = voiceLines[Math.floor(Math.random() * voiceLines.length)];
+
+  // Flash UI indicator to match audio transmission frame
+  const node = document.getElementById('voice-node');
+  document.getElementById('voice-status').innerText = 'RECV VC';
+  document.getElementById('voice-status').style.color = '#ffff00';
+  node.style.background = '#222211';
+
+  pushChatMessage(`VOICE // ${targetName}`, `"${phrase.toUpperCase()}"`, '#ffff00');
+  emitRadioVoice(phrase);
+
+  setTimeout(() => {
+    if (!keys['KeyV']) {
+      document.getElementById('voice-status').innerText = 'STDBY [V]';
+      document.getElementById('voice-status').style.color = '#666';
+      node.style.background = '#1f1f1e';
+    }
+  }, 2200);
+}
+
+// ======================================================
+// ================= COMBAT PIPELINE RUNNERS ============
+// ======================================================
+function fireWeaponSystem() {
+  if (document.pointerLockElement !== document.body || player.health <= 0 || isChatOpen) return;
+  
+  if (!canShoot) {
+    const alertEl = document.getElementById('cooldown-alert');
+    alertEl.style.display = 'block';
+    setTimeout(() => { alertEl.style.display = 'none'; }, 200);
+    return;
+  }
+
+  canShoot = false;
+  weaponGroup.children[0].position.z += 0.22; 
   muzzleFlashObj.visible = true;
 
-  setTimeout(() => { muzzleFlashObj.visible = false; }, 60);
+  setTimeout(() => { muzzleFlashObj.visible = false; }, 120);
+  setTimeout(() => { canShoot = true; }, FIRE_DELAY);
 
   const raycaster = new THREE.Raycaster();
   raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
 
-  const targets = meatDrones.map(d => d.mesh);
+  const targets = rivals.map(r => r.mesh);
   const hits = raycaster.intersectObjects(targets);
 
   if (hits.length > 0) {
     const targetMesh = hits[0].object;
-    const idx = meatDrones.findIndex(d => d.mesh === targetMesh);
+    const idx = rivals.findIndex(r => r.mesh === targetMesh);
 
     if (idx !== -1) {
-      const drone = meatDrones[idx];
-      drone.health -= 25;
-      spawnChunkyBlood(hits[0].point, 0xff0000, 10); // Red pixel bursts
+      const targetRival = rivals[idx];
+      targetRival.health -= 34; 
+      spawnChunkyBlood(hits[0].point, 0xff0000, 12);
 
-      if (drone.health <= 0) {
-        spawnChunkyBlood(drone.mesh.position, 0x5a0a0a, 35); // Meat chunks explosion
-        scene.remove(drone.mesh);
-        meatDrones.splice(idx, 1);
+      if (targetRival.health <= 0) {
+        pushNotification(`You fragged [${targetRival.name}]`);
+        spawnChunkyBlood(targetRival.mesh.position, 0x440000, 40);
+        
+        targetRival.mesh.position.set(Math.random() * 100 + 10, 2.0, Math.random() * 70 + 10);
+        targetRival.health = 100;
         
         killCount++;
         document.getElementById('score-display').innerText = String(killCount).padStart(2, '0');
@@ -343,7 +508,7 @@ function fireWeaponSystem() {
   } else {
     const wallHits = raycaster.intersectObjects(walls);
     if (wallHits.length > 0) {
-      spawnChunkyBlood(wallHits[0].point, 0x4a3d2c, 4); // Mud sparks
+      spawnChunkyBlood(wallHits[0].point, 0x4a3d2c, 4);
     }
   }
 }
@@ -351,12 +516,8 @@ function fireWeaponSystem() {
 function spawnChunkyBlood(pos, colorHex, count) {
   const cGeo = new THREE.BoxGeometry(0.25, 0.25, 0.25);
   const cMat = new THREE.MeshBasicMaterial({ color: colorHex });
-
   for (let i = 0; i < count; i++) {
-    const chunk = new THREE.Mesh(cGeo, cMat);
-    chunk.position.copy(pos);
-    scene.add(chunk);
-
+    const chunk = new THREE.Mesh(cGeo, cMat); chunk.position.copy(pos); scene.add(chunk);
     activeSparks.push({
       mesh: chunk,
       vel: new THREE.Vector3((Math.random() - 0.5) * 0.5, (Math.random() - 0.2) * 0.4, (Math.random() - 0.5) * 0.5),
@@ -365,9 +526,27 @@ function spawnChunkyBlood(pos, colorHex, count) {
   }
 }
 
-// ======================================================
-// ================= LIFECYCLE LOOPS ====================
-// ======================================================
+function pushNotification(text) {
+  const feed = document.getElementById('kill-feed');
+  const log = document.createElement('div');
+  log.innerText = text;
+  feed.appendChild(log);
+  if (feed.children.length > 5) feed.removeChild(feed.children[0]);
+  setTimeout(() => { if (log.parentNode) feed.removeChild(log); }, 5000);
+}
+
+function simulateBackgroundFrags() {
+  if (!isEngineActive || player.health <= 0) return;
+  const p1 = RIVAL_NAMES[Math.floor(Math.random() * RIVAL_NAMES.length)];
+  let p2 = RIVAL_NAMES[Math.floor(Math.random() * RIVAL_NAMES.length)];
+  while(p1 === p2) { p2 = RIVAL_NAMES[Math.floor(Math.random() * RIVAL_NAMES.length)]; }
+  
+  const weapons = ['plasma_slug', 'hull_breaker', 'rail_spike', 'shrapnel_burst'];
+  const wpn = weapons[Math.floor(Math.random() * weapons.length)];
+  
+  pushNotification(`[${p1}] killed [${p2}] with ${wpn}`);
+}
+
 function mainEngineLoop() {
   if (!isEngineActive) return;
   requestAnimationFrame(mainEngineLoop);
@@ -375,7 +554,7 @@ function mainEngineLoop() {
   const delta = clock.getDelta();
   const time = clock.getElapsedTime();
 
-  if (player.health > 0) {
+  if (player.health > 0 && !isChatOpen) {
     camera.rotation.set(0, 0, 0);
     camera.rotation.y = player.rot.y;
     camera.rotation.x = player.rot.x;
@@ -399,9 +578,7 @@ function mainEngineLoop() {
       player.pos.z = checkZ;
     }
 
-    // Heavy 1993 Weapon Bobbing / Interpolation Calculations
-    let bobY = -0.28;
-    let bobX = 0;
+    let bobY = -0.28; let bobX = 0;
     if (keys['KeyW'] || keys['KeyS'] || keys['KeyA'] || keys['KeyD']) {
       bobY += Math.abs(Math.sin(time * 12)) * 0.04 - 0.02;
       bobX += Math.cos(time * 6) * 0.03;
@@ -414,40 +591,39 @@ function mainEngineLoop() {
     camera.position.copy(player.pos);
   }
 
-  // Track Enemy Entities Logic
-  meatDrones.forEach(drone => {
-    drone.mesh.lookAt(player.pos.x, drone.mesh.position.y, player.pos.z);
-    
-    const track = new THREE.Vector3().subVectors(player.pos, drone.mesh.position);
-    track.y = 0;
-    const distance = track.length();
-    track.normalize();
+  // Simulate Rival Navigation Matrices
+  rivals.forEach(rival => {
+    rival.actionTimer -= delta;
+    if (rival.actionTimer <= 0) {
+      rival.targetPos.set(Math.random() * 120 + 10, 2.0, Math.random() * 80 + 10);
+      rival.actionTimer = Math.random() * 4 + 2;
+    }
 
-    if (distance > 4.5 && player.health > 0) {
-      drone.mesh.position.add(track.multiplyScalar(drone.speed));
-    } else if (player.health > 0) {
-      // Chunk damage matrix drain
-      player.health = Math.max(0, player.health - 0.6);
+    rival.mesh.lookAt(rival.targetPos.x, rival.mesh.position.y, rival.targetPos.z);
+    const step = new THREE.Vector3().subVectors(rival.targetPos, rival.mesh.position);
+    if(step.length() > 1.0) {
+      step.y = 0; step.normalize();
+      rival.mesh.position.add(step.multiplyScalar(rival.speed));
+    }
+
+    const checkDist = rival.mesh.position.distanceTo(player.pos);
+    if (checkDist < 25.0 && Math.random() > 0.985 && player.health > 0 && !isChatOpen) {
+      player.health = Math.max(0, player.health - 8);
       document.getElementById('hp-display').innerText = Math.ceil(player.health) + "%";
+      pushNotification(`[${rival.name}] landed hit on you`);
 
       if (player.health <= 0) {
         document.getElementById('hp-display').innerText = "DEAD";
-        alert("SLUDGECORE TERMINATED // RELOAD SIMULATION CORE.");
+        pushNotification(`[${rival.name}] cleared your link array`);
+        alert("LINK CORRUPTED // RESPONDING SYSTEM CHANNELS...");
         window.location.reload();
       }
     }
   });
 
-  // Particle physics calculations
   for (let i = activeSparks.length - 1; i >= 0; i--) {
-    const s = activeSparks[i];
-    s.mesh.position.add(s.vel);
-    s.vel.y -= 0.02; // Rigid gravity drops
-    s.life--;
-    if (s.life <= 0) {
-      scene.remove(s.mesh);
-      activeSparks.splice(i, 1);
-    }
+    const s = activeSparks[i]; s.mesh.position.add(s.vel); s.vel.y -= 0.02; s.life--;
+    if (s.life <= 0) { scene.remove(s.mesh); activeSparks.splice(i, 1); }
   }
 
   renderer.render(scene, camera);
