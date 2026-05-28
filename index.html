@@ -3,80 +3,90 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VANGUARD INFILTRATOR // NEXT-GEN FPS</title>
+  <title>SLUDGECORE // E1M1: RUNTIME ERROR</title>
   <style>
-    body, html { margin: 0; padding: 0; overflow: hidden; width: 100%; height: 100%; background: #020205; font-family: 'Segoe UI', Roboto, sans-serif; user-select: none; }
+    body, html { margin: 0; padding: 0; overflow: hidden; width: 100%; height: 100%; background: #000; font-family: 'Impact', 'Arial Black', sans-serif; user-select: none; }
     
-    /* Crisp, High-Res Cinematic Viewport */
+    /* Forces the low-res canvas to scale with chunky, non-blurred pixels */
     canvas {
-      width: 100vw;
-      height: 100vh;
+      width: 100vw !important;
+      height: calc(100vh - 80px) !important;
+      image-rendering: -moz-crisp-edges;
+      image-rendering: -webkit-crisp-edges;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
       display: block;
     }
 
-    /* Cinematic Overlay Screen */
+    /* 90s Shareware DOS Menu */
     #overlay {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: linear-gradient(135deg, #050b14 0%, #010307 100%);
-      display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 50;
-      color: #fff; text-align: center;
+      background: #0b0d0c; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; z-index: 50;
+      color: #00ff00; text-align: center; border: 8px double #334433; box-sizing: border-box;
     }
-    .btn-deploy {
-      background: transparent; color: #00ffcc; padding: 18px 45px; font-size: 20px;
-      border: 2px solid #00ffcc; font-weight: bold; letter-spacing: 3px; cursor: pointer;
-      text-transform: uppercase; transition: all 0.3s ease; box-shadow: 0 0 15px rgba(0,255,204,0.2);
+    .btn-dos {
+      background: #18221c; color: #ffff00; padding: 12px 35px; font-size: 22px;
+      border: 4px solid #00ff00; font-weight: bold; cursor: pointer;
+      font-family: monospace; text-transform: uppercase;
     }
-    .btn-deploy:hover { background: #00ffcc; color: #000; box-shadow: 0 0 30px #00ffcc; }
+    .btn-dos:hover { background: #ffff00; color: #000; border-color: #fff; }
 
-    /* Minimalist Tactical Crosshair */
+    /* Doom-Style Heavy Bottom Status Bar */
+    #status-bar {
+      position: absolute; bottom: 0; left: 0; width: 100%; height: 80px;
+      background: #2b2b2a; border-top: 6px solid #444443;
+      display: none; grid-template-columns: repeat(4, 1fr);
+      align-items: center; text-align: center; z-index: 10;
+      box-sizing: border-box; color: #ff3333; font-size: 16px; letter-spacing: 1px;
+      border-bottom: 4px solid #111;
+    }
+    .status-node {
+      border-right: 4px solid #1c1c1b; border-left: 2px solid #3d3d3c; height: 100%; display: flex; flex-direction: column; justify-content: center;
+    }
+    .status-val { font-size: 32px; color: #ff0000; font-weight: bold; text-shadow: 2px 2px #440000; font-family: monospace; }
+    .status-title { font-size: 11px; color: #8a8a85; font-family: monospace; margin-bottom: 2px; }
+
     #crosshair {
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      width: 6px; height: 6px; background: rgba(0, 255, 204, 0.8); border-radius: 50%;
-      pointer-events: none; z-index: 20; box-shadow: 0 0 8px #00ffcc;
+      width: 4px; height: 4px; background: #ff0000; pointer-events: none; z-index: 20;
     }
-
-    /* Sleek Holographic Visor HUD */
-    #hud-visor {
-      position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
-      width: 90%; max-width: 1200px; display: flex; justify-content: space-between;
-      align-items: flex-end; pointer-events: none; z-index: 30;
-      font-family: monospace; color: #00ffcc; text-shadow: 0 0 6px rgba(0,255,204,0.5);
-    }
-    .hud-panel {
-      background: rgba(2, 12, 22, 0.6); border: 1px solid rgba(0, 255, 204, 0.3);
-      padding: 12px 25px; border-radius: 4px; backdrop-filter: blur(4px);
-    }
-    .hud-label { font-size: 11px; color: #88aabb; letter-spacing: 2px; text-transform: uppercase; }
-    .hud-value { font-size: 28px; font-weight: bold; font-family: sans-serif; }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.min.js"></script>
 </head>
 <body>
 
   <div id="overlay">
-    <h1 style="font-size: 42px; letter-spacing: 6px; margin: 0 0 10px 0; font-weight: 300; text-transform: uppercase;">Atlantic Vanguard: Hull Breacher</h1>
-    <p style="color: #668899; letter-spacing: 2px; font-size: 14px; margin-bottom: 40px;">GRAPHICAL ENGINE VERIFICATION: RE-REALISM PROTOTYPE</p>
-    <button class="btn-deploy" onclick="initEngine()">Deploy Systems</button>
+    <h1 style="font-size: 56px; margin: 0 0 5px 0; color: #ff3300; text-shadow: 4px 4px #4a0000;">SLUDGECORE</h1>
+    <p style="color: #889988; font-family: monospace; font-size: 13px; margin-bottom: 40px;">V1.0 BETA SHAREWARE ENGINE // RE-GRIT VERIFICATION</p>
+    <button class="btn-dos" onclick="initEngine()">M1: BOOT ENGINE</button>
   </div>
 
   <div id="crosshair"></div>
 
-  <div id="hud-visor">
-    <div class="hud-panel">
-      <div class="hud-label">Hull Signatures</div>
-      <div id="hp-display" class="hud-value">100%</div>
+  <div id="status-bar">
+    <div class="status-node">
+      <span class="status-title">AMMO CODE</span>
+      <span class="status-val" style="color: #ffff00;">INF</span>
     </div>
-    <div class="hud-panel" style="text-align: right;">
-      <div class="hud-label">Eliminated Threats</div>
-      <div id="score-display" class="hud-value" style="color: #ffffff; text-shadow: 0 0 6px #fff;">00</div>
+    <div class="status-node">
+      <span class="status-title">HEALTH Vitals</span>
+      <span id="hp-display" class="status-val" style="color: #00ff00;">100%</span>
+    </div>
+    <div class="status-node" style="background: #1f1f1e;">
+      <span style="color: #ff5500; font-size: 20px; font-weight: bold; letter-spacing: 2px;">SLUDGE</span>
+    </div>
+    <div class="status-node" style="border-right: none;">
+      <span class="status-title">FRAG COUNT</span>
+      <span id="score-display" class="status-val" style="color: #00ffff;">00</span>
     </div>
   </div>
 
 <script>
 // ======================================================
-// ================= HULL ARCHITECTURE MAP ==============
+// ================= INDUSTRIAL LEVEL LAYOUT ============
 // ======================================================
-const HULL_MAP = [
+const LEVEL_GRID = [
   [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
   [1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1],
   [1,0,1,1,1,0,1,0,1,1,1,1,1,1,0,1],
@@ -89,369 +99,354 @@ const HULL_MAP = [
   [1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1],
   [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
 ];
-const SCALE = 12; // Dimensional geometry scale for high bulkheads
+const SCALE = 10;
 
 // ======================================================
-// ================= PROCEDURAL HD PANEL TEXTURES =======
+// ================= 8-BIT PROCEDURAL TEXTURES ==========
 // ======================================================
-function createCinematicMetalTexture() {
+function generateGrittyTexture() {
   const canvas = document.createElement('canvas');
-  canvas.width = 512; canvas.height = 512;
+  canvas.width = 64; canvas.height = 64; // Low-res 64x64 texture map sizing
   const ctx = canvas.getContext('2d');
   
-  // Base dark military slate steel
-  ctx.fillStyle = '#1c2229'; ctx.fillRect(0, 0, 512, 512);
+  // Base muddy rusted sludge green
+  ctx.fillStyle = '#2b2e24'; ctx.fillRect(0, 0, 64, 64);
   
-  // Add riveted hull panel divider lines
-  ctx.strokeStyle = '#0f1318'; ctx.lineWidth = 4;
-  ctx.strokeRect(10, 10, 492, 492);
-  ctx.beginPath(); ctx.moveTo(256, 10); ctx.lineTo(256, 502); ctx.stroke();
-  
-  // Metallic micro-scratching layers
-  for (let i = 0; i < 3000; i++) {
-    ctx.fillStyle = Math.random() > 0.5 ? 'rgba(255,255,255,0.015)' : 'rgba(0,0,0,0.15)';
-    ctx.fillRect(Math.random() * 512, Math.random() * 512, Math.random() * 3 + 1, 1);
+  // Generate ugly, crunchy pixels, rust leaks, and noise streaks
+  for (let x = 0; x < 64; x += 2) {
+    for (let y = 0; y < 64; y += 2) {
+      const rand = Math.random();
+      if (rand > 0.92) {
+        ctx.fillStyle = '#11140e'; // Corrosion spot
+      } else if (rand > 0.85) {
+        ctx.fillStyle = '#4a3d2c'; // Rusted orange leak
+      } else if (rand > 0.65) {
+        ctx.fillStyle = '#32372a'; // Minor variance
+      } else {
+        ctx.fillStyle = '#2b2e24';
+      }
+      ctx.fillRect(x, y, 2, 2);
+    }
   }
-  
+
+  // Draw chunky horizontal iron rivets block lines
+  ctx.fillStyle = '#181b13';
+  ctx.fillRect(0, 0, 64, 4);
+  ctx.fillRect(0, 30, 64, 4);
+  ctx.fillRect(0, 60, 64, 4);
+
   const texture = new THREE.CanvasTexture(canvas);
-  texture.generateMipmaps = true; // Smooth anti-aliasing generation textures
+  texture.magFilter = THREE.NearestFilter; // Forces razor sharp pixelation without smoothing interpolation
+  texture.minFilter = THREE.NearestFilter;
   return texture;
 }
 
 // ======================================================
-// ================= SYSTEM BUILD INTERFACES ============
+// ================= ENGINE CONFIGURATIONS ==============
 // ======================================================
 let scene, camera, renderer, clock;
-let player = { pos: new THREE.Vector3(18, 4, 18), rot: new THREE.Vector3(), speed: 0.18, health: 100 };
-let keys = {}, mouseDelta = { x: 0, y: 0 };
+let player = { pos: new THREE.Vector3(15, 3.5, 15), rot: new THREE.Vector3(), speed: 0.15, health: 100 };
+let keys = {};
 let isEngineActive = false;
 
 const walls = [];
-const drones = [];
-const particlePool = [];
-let weaponGroup, muzzleFlashLight, ambientPulse;
-let fragCounter = 0;
+const meatDrones = [];
+const activeSparks = [];
+let weaponGroup, muzzleFlashObj;
+let killCount = 0;
+
+// PIXEL SCALE DOWNGRADE: Higher number = chunkier, rougher pixels
+const pixelScale = 3.5; 
 
 function initEngine() {
   document.getElementById('overlay').style.display = 'none';
+  document.getElementById('status-bar').style.display = 'grid';
   document.body.requestPointerLock();
 
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x02050a);
-  scene.fog = new THREE.FogExp2(0x02050a, 0.022); // Deep volumetric atmosphere
+  scene.background = new THREE.Color(0x050605);
+  scene.fog = new THREE.FogExp2(0x050605, 0.045); // Aggressive 90s drop-off fog depth limits
 
-  camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 500);
+  camera = new THREE.PerspectiveCamera(55, window.innerWidth / (window.innerHeight - 80), 0.1, 300);
   camera.position.copy(player.pos);
   scene.add(camera);
 
-  renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Dynamic sharp anti-aliasing profile
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Ultra soft smooth shadow arrays
+  renderer = new THREE.WebGLRenderer({ antialias: false }); // Completely bypass anti-aliasing passes
+  renderer.setSize(window.innerWidth / pixelScale, (window.innerHeight - 80) / pixelScale, false);
   document.body.appendChild(renderer.domElement);
 
   clock = new THREE.Clock();
 
-  // Next-Gen Cinematic Light Rigging
-  const globalAmbient = new THREE.AmbientLight(0x08111a, 0.4);
-  scene.add(globalAmbient);
+  // Low-tech flat lighting setups
+  const ambientLight = new THREE.AmbientLight(0x777777); 
+  scene.add(ambientLight);
 
-  // Dynamic tactical warning sirens casting environmental sweeps
-  ambientPulse = new THREE.PointLight(0x0055ff, 1.5, 80);
-  ambientPulse.position.set(40, 10, 40);
-  scene.add(ambientPulse);
+  buildGrittyWorld();
+  buildCenteredWeapon();
+  spawnMeatDrones();
 
-  muzzleFlashLight = new THREE.PointLight(0xffaa22, 0, 45);
-  muzzleFlashLight.castShadow = true;
-  scene.add(muzzleFlashLight);
-
-  buildCinematicEnvironment();
-  assembleHighTechWeapon();
-  populateThreatMatrices();
-
-  // Input triggers
   window.addEventListener('keydown', e => keys[e.code] = true);
   window.addEventListener('keyup', e => keys[e.code] = false);
-  document.addEventListener('mousemove', handleCinematicLook);
+  document.addEventListener('mousemove', handleGrittyLook);
   window.addEventListener('mousedown', fireWeaponSystem);
 
   isEngineActive = true;
-  renderLoop();
+  mainEngineLoop();
 }
 
 // ======================================================
-// ================= HIGH RES WORLD GENERATION ==========
+// ================= ENVIRONMENT ARCHITECTURE ===========
 // ======================================================
-function buildCinematicEnvironment() {
-  const metalTex = createCinematicMetalTexture();
-  const wallGeo = new THREE.BoxGeometry(SCALE, SCALE, SCALE);
+function buildGrittyWorld() {
+  const sludgeTex = generateGrittyTexture();
+  const blockGeo = new THREE.BoxGeometry(SCALE, SCALE, SCALE);
   
-  // AAA Standard physically-based metallic material pipelines
-  const hullMaterial = new THREE.MeshStandardMaterial({
-    map: metalTex,
-    metalness: 0.85,
-    roughness: 0.18,
-    bumpScale: 0.05
-  });
+  // Lambert material responds crudely to light, keeping rendering fast and unpolished
+  const wallMat = new THREE.MeshLambertMaterial({ map: sludgeTex });
 
-  for (let r = 0; r < HULL_MAP.length; r++) {
-    for (let c = 0; c < HULL_MAP[r].length; c++) {
-      if (HULL_MAP[r][c] === 1) {
-        const block = new THREE.Mesh(wallGeo, hullMaterial);
-        block.position.set(c * SCALE, SCALE / 2, r * SCALE);
-        block.castShadow = true;
-        block.receiveShadow = true;
-        scene.add(block);
-        walls.push(block);
-      } else {
-        // Drop tech panel lights into dark paths occasionally
-        if (Math.random() < 0.12) {
-          const corridorLight = new THREE.PointLight(0x00ffcc, 0.8, 25);
-          corridorLight.position.set(c * SCALE, SCALE - 2, r * SCALE);
-          scene.add(corridorLight);
-        }
+  for (let r = 0; r < LEVEL_GRID.length; r++) {
+    for (let c = 0; c < LEVEL_GRID[r].length; c++) {
+      if (LEVEL_GRID[r][c] === 1) {
+        const wallBlock = new THREE.Mesh(blockGeo, wallMat);
+        wallBlock.position.set(c * SCALE, SCALE / 2, r * SCALE);
+        scene.add(wallBlock);
+        walls.push(wallBlock);
       }
     }
   }
 
-  // Dark industrial plating floor
+  // Dirty brown-grey floor canvas texture map
+  const floorCanvas = document.createElement('canvas');
+  floorCanvas.width = 32; floorCanvas.height = 32;
+  const fCtx = floorCanvas.getContext('2d');
+  fCtx.fillStyle = '#1a1816'; fCtx.fillRect(0,0,32,32);
+  for(let i=0; i<200; i++) { fCtx.fillStyle = Math.random() > 0.5 ? '#11100f' : '#22201e'; fCtx.fillRect(Math.random()*32, Math.random()*32, 1, 1); }
+  const floorTex = new THREE.CanvasTexture(floorCanvas);
+  floorTex.wrapS = THREE.RepeatWrapping; floorTex.wrapT = THREE.RepeatWrapping;
+  floorTex.repeat.set(40, 40); floorTex.magFilter = THREE.NearestFilter;
+
   const floorGeo = new THREE.PlaneGeometry(500, 500);
-  const floorMat = new THREE.MeshStandardMaterial({ color: 0x0a0d12, metalness: 0.9, roughness: 0.25 });
+  const floorMat = new THREE.MeshLambertMaterial({ map: floorTex });
   const floor = new THREE.Mesh(floorGeo, floorMat);
   floor.rotation.x = -Math.PI / 2;
-  floor.receiveShadow = true;
   scene.add(floor);
 
-  // Ceilings
-  const ceilMat = new THREE.MeshStandardMaterial({ color: 0x07090c, metalness: 0.7, roughness: 0.4 });
-  const ceiling = new THREE.Mesh(floorGeo, ceilMat);
+  // Black ceiling capping
+  const ceilingMat = new THREE.MeshBasicMaterial({ color: 0x090909 });
+  const ceiling = new THREE.Mesh(floorGeo, ceilingMat);
   ceiling.rotation.x = Math.PI / 2;
   ceiling.position.y = SCALE;
-  ceiling.receiveShadow = true;
   scene.add(ceiling);
 }
 
 // ======================================================
-// ================= HIGH-TECH WEAPON ARCHITECTURE ======
+// ================= CENTERED SPRITE WEAPON =============
 // ======================================================
-function assembleHighTechWeapon() {
+function buildCenteredWeapon() {
   weaponGroup = new THREE.Group();
 
-  const frameMat = new THREE.MeshStandardMaterial({ color: 0x11161b, metalness: 0.9, roughness: 0.1 });
-  const coreGlowMat = new THREE.MeshBasicMaterial({ color: 0x00ffcc });
+  const gunMat = new THREE.MeshBasicMaterial({ color: 0x444845 });
+  const barrelMat = new THREE.MeshBasicMaterial({ color: 0x1f2120 });
 
-  // Sleek Rail Chassis
-  const mainChassis = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.16, 1.8), frameMat);
-  mainChassis.position.set(0.3, -0.28, -0.8);
-  weaponGroup.add(mainChassis);
+  // Boxy, chunky pixel-art style gun framework
+  const baseFrame = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.35, 0.6), gunMat);
+  const barrel = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.06, 0.5), barrelMat);
+  barrel.position.set(0, 0.1, -0.4);
+  baseFrame.add(barrel);
 
-  // Holographic Capacitor Rail Lines
-  const railGlow1 = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.02, 1.2), coreGlowMat);
-  railGlow1.position.set(0.22, -0.24, -1.0);
-  const railGlow2 = railGlow1.clone();
-  railGlow2.position.x = 0.38;
-  weaponGroup.add(railGlow1, railGlow2);
+  // Big pixelated yellow box for immediate muzzle flash frames
+  muzzleFlashObj = new THREE.Mesh(
+    new THREE.BoxGeometry(0.2, 0.2, 0.2),
+    new THREE.MeshBasicMaterial({ color: 0xffcc00 })
+  );
+  muzzleFlashObj.position.set(0, 0.1, -0.7);
+  muzzleFlashObj.visible = false;
+  baseFrame.add(muzzleFlashObj);
 
+  // LOCK DEAD CENTER AT SCREEN BOTTOM (Classic Doom Style positioning)
+  baseFrame.position.set(0, -0.28, -0.55);
+  weaponGroup.add(baseFrame);
   camera.add(weaponGroup);
 }
 
 // ======================================================
-// ================= THREAT AI DRONES ===================
+// ================= SPAWN ENEMIES ======================
 // ======================================================
-function populateThreatMatrices() {
-  const droneGeo = new THREE.SphereGeometry(1.6, 32, 32);
-  const droneMat = new THREE.MeshStandardMaterial({
-    color: 0x222b35,
-    metalness: 0.9,
-    roughness: 0.1,
-    emissive: 0xff0033,
-    emissiveIntensity: 0.5
-  });
+function spawnMeatDrones() {
+  // Low-poly voxel chunks representing mutated engine errors
+  const droneGeo = new THREE.BoxGeometry(2.2, 2.2, 2.2);
+  const droneMat = new THREE.MeshBasicMaterial({ color: 0x7a1f1d }); // Dried meat red
 
-  const triggerPoints = [[36, 48], [84, 24], [144, 72], [108, 96]];
+  const positions = [[30, 40], [70, 20], [120, 50], [90, 80]];
 
-  triggerPoints.forEach(pt => {
-    const droneMesh = new THREE.Mesh(droneGeo, droneMat);
-    droneMesh.position.set(pt[0], 3.5, pt[1]);
-    droneMesh.castShadow = true;
-    scene.add(droneMesh);
+  positions.forEach(pos => {
+    const mesh = new THREE.Mesh(droneGeo, droneMat);
+    mesh.position.set(pos[0], 3.0, pos[1]);
+    scene.add(mesh);
 
-    // Glowing core target array inside drone matrix
-    const coreLight = new THREE.PointLight(0xff0033, 1.2, 15);
-    coreLight.position.set(0, 0, 0);
-    droneMesh.add(coreLight);
+    // Edge tracking highlight frames
+    const wire = new THREE.Mesh(droneGeo, new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true }));
+    wire.scale.multiplyScalar(1.01);
+    mesh.add(wire);
 
-    drones.push({
-      mesh: droneMesh,
-      health: 60,
-      speed: 0.05,
-      light: coreLight
+    meatDrones.push({
+      mesh: mesh,
+      health: 50,
+      speed: 0.07
     });
   });
 }
 
 // ======================================================
-// ================= CONTROLS INTERFACING ===============
+// ================= ENGINE OPERATION INTERFACES ========
 // ======================================================
-function handleCinematicLook(e) {
+function handleGrittyLook(e) {
   if (document.pointerLockElement !== document.body) return;
-  player.rot.y -= e.movementX * 0.0022;
-  player.rot.x -= e.movementY * 0.0022;
-  player.rot.x = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, player.rot.x));
+  player.rot.y -= e.movementX * 0.0035;
+  player.rot.x -= e.movementY * 0.0035;
+  player.rot.x = Math.max(-Math.PI / 2.5, Math.min(Math.PI / 2.5, player.rot.x));
 }
 
 function fireWeaponSystem() {
   if (document.pointerLockElement !== document.body || player.health <= 0) return;
 
-  // Ultra crisp linear translation recoil shifts
-  weaponGroup.position.z += 0.35;
-  weaponGroup.position.y += 0.05;
-  muzzleFlashLight.intensity = 6.0;
-  muzzleFlashLight.position.copy(camera.position).add(new THREE.Vector3(0.3, -0.2, -0.5).applyQuaternion(camera.quaternion));
+  // Immediate snap kickback animations
+  weaponGroup.children[0].position.z += 0.15;
+  muzzleFlashObj.visible = true;
+
+  setTimeout(() => { muzzleFlashObj.visible = false; }, 60);
 
   const raycaster = new THREE.Raycaster();
   raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
 
-  const targetMeshes = drones.map(d => d.mesh);
-  const hits = raycaster.intersectObjects(targetMeshes);
+  const targets = meatDrones.map(d => d.mesh);
+  const hits = raycaster.intersectObjects(targets);
 
   if (hits.length > 0) {
-    const targetObj = hits[0].object;
-    const idx = drones.findIndex(d => d.mesh === targetObj);
+    const targetMesh = hits[0].object;
+    const idx = meatDrones.findIndex(d => d.mesh === targetMesh);
 
     if (idx !== -1) {
-      const drone = drones[idx];
-      drone.health -= 20;
-      generateCinematicSparks(hits[0].point, 0xff0033, 12); // Neon blood flashes
+      const drone = meatDrones[idx];
+      drone.health -= 25;
+      spawnChunkyBlood(hits[0].point, 0xff0000, 10); // Red pixel bursts
 
       if (drone.health <= 0) {
-        generateCinematicSparks(drone.mesh.position, 0xffaa00, 40); // Massive explosive plasma bursts
+        spawnChunkyBlood(drone.mesh.position, 0x5a0a0a, 35); // Meat chunks explosion
         scene.remove(drone.mesh);
-        drones.splice(idx, 1);
-        fragCounter++;
-        document.getElementById('score-display').innerText = fragCounter < 10 ? "0" + fragCounter : fragCounter;
+        meatDrones.splice(idx, 1);
+        
+        killCount++;
+        document.getElementById('score-display').innerText = String(killCount).padStart(2, '0');
       }
     }
   } else {
     const wallHits = raycaster.intersectObjects(walls);
     if (wallHits.length > 0) {
-      generateCinematicSparks(wallHits[0].point, 0x00ffcc, 6); // High energy laser ricochet sparks
+      spawnChunkyBlood(wallHits[0].point, 0x4a3d2c, 4); // Mud sparks
     }
   }
 }
 
-function generateCinematicSparks(pos, colorHex, count) {
-  const pGeo = new THREE.BoxGeometry(0.08, 0.08, 0.08);
-  const pMat = new THREE.MeshBasicMaterial({ color: colorHex });
+function spawnChunkyBlood(pos, colorHex, count) {
+  const cGeo = new THREE.BoxGeometry(0.25, 0.25, 0.25);
+  const cMat = new THREE.MeshBasicMaterial({ color: colorHex });
 
   for (let i = 0; i < count; i++) {
-    const p = new THREE.Mesh(pGeo, pMat);
-    p.position.copy(pos);
-    scene.add(p);
+    const chunk = new THREE.Mesh(cGeo, cMat);
+    chunk.position.copy(pos);
+    scene.add(chunk);
 
-    particlePool.push({
-      mesh: p,
-      vel: new THREE.Vector3((Math.random() - 0.5) * 0.5, (Math.random() - 0.3) * 0.4, (Math.random() - 0.5) * 0.5),
-      life: 25 + Math.random() * 20
+    activeSparks.push({
+      mesh: chunk,
+      vel: new THREE.Vector3((Math.random() - 0.5) * 0.5, (Math.random() - 0.2) * 0.4, (Math.random() - 0.5) * 0.5),
+      life: 12 + Math.random() * 10
     });
   }
 }
 
 // ======================================================
-// ================= ENGINE LIFECYCLE RENDER ============
+// ================= LIFECYCLE LOOPS ====================
 // ======================================================
-function renderLoop() {
+function mainEngineLoop() {
   if (!isEngineActive) return;
-  requestAnimationFrame(renderLoop);
+  requestAnimationFrame(mainEngineLoop);
 
   const delta = clock.getDelta();
   const time = clock.getElapsedTime();
 
   if (player.health > 0) {
-    // Sync Viewport Orientations
     camera.rotation.set(0, 0, 0);
     camera.rotation.y = player.rot.y;
     camera.rotation.x = player.rot.x;
 
-    // Movement Vectors Calculation
-    const move = new THREE.Vector3();
-    if (keys['KeyW']) move.z -= 1;
-    if (keys['KeyS']) move.z += 1;
-    if (keys['KeyA']) move.x -= 1;
-    if (keys['KeyD']) move.x += 1;
+    const moveVector = new THREE.Vector3();
+    if (keys['KeyW']) moveVector.z -= 1;
+    if (keys['KeyS']) moveVector.z += 1;
+    if (keys['KeyA']) moveVector.x -= 1;
+    if (keys['KeyD']) moveVector.x += 1;
 
-    move.applyAxisAngle(new THREE.Vector3(0, 1, 0), player.rot.y);
-    move.normalize().multiplyScalar(player.speed);
+    moveVector.applyAxisAngle(new THREE.Vector3(0, 1, 0), player.rot.y);
+    moveVector.normalize().multiplyScalar(player.speed);
 
-    // Collision Matrix Verifications
-    const targetX = player.pos.x + move.x;
-    const targetZ = player.pos.z + move.z;
-    const checkGridX = Math.floor((targetX + SCALE / 2) / SCALE);
-    const checkGridZ = Math.floor((targetZ + SCALE / 2) / SCALE);
+    const checkX = player.pos.x + moveVector.x;
+    const checkZ = player.pos.z + moveVector.z;
+    const cellX = Math.floor((checkX + SCALE / 2) / SCALE);
+    const cellZ = Math.floor((checkZ + SCALE / 2) / SCALE);
 
-    if (HULL_MAP[checkGridZ] && HULL_MAP[checkGridZ][checkGridX] !== 1) {
-      player.pos.x = targetX;
-      player.pos.z = targetZ;
+    if (LEVEL_GRID[cellZ] && LEVEL_GRID[cellZ][cellX] !== 1) {
+      player.pos.x = checkX;
+      player.pos.z = checkZ;
     }
 
-    // Weapon Sway Smoothing Loops
-    let weaponSwayY = 0;
-    let weaponSwayX = 0;
+    // Heavy 1993 Weapon Bobbing / Interpolation Calculations
+    let bobY = -0.28;
+    let bobX = 0;
     if (keys['KeyW'] || keys['KeyS'] || keys['KeyA'] || keys['KeyD']) {
-      weaponSwayY = Math.sin(time * 9) * 0.015;
-      weaponSwayX = Math.cos(time * 4.5) * 0.02;
+      bobY += Math.abs(Math.sin(time * 12)) * 0.04 - 0.02;
+      bobX += Math.cos(time * 6) * 0.03;
     }
 
-    weaponGroup.position.x = THREE.MathUtils.lerp(weaponGroup.position.x, weaponSwayX, 0.1);
-    weaponGroup.position.y = THREE.MathUtils.lerp(weaponGroup.position.y, weaponSwayY, 0.1);
-    weaponGroup.position.z = THREE.MathUtils.lerp(weaponGroup.position.z, 0, 0.08);
+    weaponGroup.children[0].position.x = THREE.MathUtils.lerp(weaponGroup.children[0].position.x, bobX, 0.2);
+    weaponGroup.children[0].position.y = THREE.MathUtils.lerp(weaponGroup.children[0].position.y, bobY, 0.2);
+    weaponGroup.children[0].position.z = THREE.MathUtils.lerp(weaponGroup.children[0].position.z, -0.55, 0.15);
 
     camera.position.copy(player.pos);
-    camera.position.y += Math.sin(time * 9) * 0.02; // Smooth breathing look
-
-    muzzleFlashLight.intensity = THREE.MathUtils.lerp(muzzleFlashLight.intensity, 0, 0.15);
   }
 
-  // Pulsing Alarm Lighting Updates
-  ambientPulse.intensity = 1.5 + Math.sin(time * 3) * 1.0;
-
-  // AI Threat Tracking Loops
-  drones.forEach(drone => {
+  // Track Enemy Entities Logic
+  meatDrones.forEach(drone => {
     drone.mesh.lookAt(player.pos.x, drone.mesh.position.y, player.pos.z);
     
-    const trackVector = new THREE.Vector3().subVectors(player.pos, drone.mesh.position);
-    trackVector.y = 0;
-    const distance = trackVector.length();
-    trackVector.normalize();
+    const track = new THREE.Vector3().subVectors(player.pos, drone.mesh.position);
+    track.y = 0;
+    const distance = track.length();
+    track.normalize();
 
-    if (distance > 7.0 && player.health > 0) {
-      drone.mesh.position.add(trackVector.multiplyScalar(drone.speed));
-      drone.mesh.position.y = 3.5 + Math.sin(time * 3 + drone.mesh.position.x) * 0.15;
+    if (distance > 4.5 && player.health > 0) {
+      drone.mesh.position.add(track.multiplyScalar(drone.speed));
     } else if (player.health > 0) {
-      // Dynamic Radiation Damage
-      player.health = Math.max(0, player.health - 0.4);
-      document.getElementById('hp-display').innerText = Math.floor(player.health) + "%";
+      // Chunk damage matrix drain
+      player.health = Math.max(0, player.health - 0.6);
+      document.getElementById('hp-display').innerText = Math.ceil(player.health) + "%";
 
       if (player.health <= 0) {
-        document.getElementById('hp-display').style.color = "#ff0033";
-        document.getElementById('hp-display').innerText = "CRITICAL FAILURE";
-        alert("CRITICAL LOSS OF LIFE-SIGNS. RE-INITIALIZING SYSTEM INFRASTRUCTURE.");
+        document.getElementById('hp-display').innerText = "DEAD";
+        alert("SLUDGECORE TERMINATED // RELOAD SIMULATION CORE.");
         window.location.reload();
       }
     }
   });
 
-  // Particle Engine Simulation
-  for (let i = particlePool.length - 1; i >= 0; i--) {
-    const spark = particlePool[i];
-    spark.mesh.position.add(spark.vel);
-    spark.vel.y -= 0.008; // Cinematic gravity
-    spark.life--;
-
-    if (spark.life <= 0) {
-      scene.remove(spark.mesh);
-      particlePool.splice(i, 1);
+  // Particle physics calculations
+  for (let i = activeSparks.length - 1; i >= 0; i--) {
+    const s = activeSparks[i];
+    s.mesh.position.add(s.vel);
+    s.vel.y -= 0.02; // Rigid gravity drops
+    s.life--;
+    if (s.life <= 0) {
+      scene.remove(s.mesh);
+      activeSparks.splice(i, 1);
     }
   }
 
@@ -459,9 +454,9 @@ function renderLoop() {
 }
 
 window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.aspect = window.innerWidth / (window.innerHeight - 80);
   camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setSize(window.innerWidth / pixelScale, (window.innerHeight - 80) / pixelScale, false);
 });
 </script>
 </body>
