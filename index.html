@@ -2,41 +2,38 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SLUDGECORE // TOTAL ENGINE OVERHAUL</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>SLUDGECORE // UNIFIED CONTROL MATRIX</title>
   <style>
-    body, html { margin: 0; padding: 0; overflow: hidden; width: 100%; height: 100%; background: #000; font-family: 'Impact', 'Arial Black', sans-serif; user-select: none; }
+    body, html { margin: 0; padding: 0; overflow: hidden; width: 100%; height: 100%; background: #020202; font-family: 'Impact', 'Arial Black', sans-serif; user-select: none; touch-action: none; }
     
     canvas {
       width: 100vw !important;
       height: calc(100vh - 80px) !important;
-      image-rendering: pixelated;
       display: block;
-      cursor: crosshair;
     }
 
     /* DOS Network Terminal Lobby Browser */
     #terminal-lobby {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: #060807; display: flex; flex-direction: column;
+      background: #030504; display: flex; flex-direction: column;
       align-items: center; justify-content: center; z-index: 60;
-      color: #00ff00; font-family: monospace; box-sizing: border-box; padding: 20px;
+      color: #00ff66; font-family: monospace; box-sizing: border-box; padding: 20px;
     }
-    .terminal-title { font-size: 42px; color: #ff3300; font-family: 'Impact'; text-shadow: 3px 3px #3a0000; letter-spacing: 3px; margin-bottom: 5px; }
+    .terminal-title { font-size: 38px; color: #ff2200; font-family: 'Impact'; text-shadow: 3px 3px #1a0000; letter-spacing: 2px; text-align: center; }
     
     .setup-box {
-      background: #0c0f0d; border: 2px solid #00ff00; padding: 25px; width: 80%; max-width: 500px; text-align: center; box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+      background: #060a08; border: 2px solid #00ff66; padding: 25px; width: 90%; max-width: 500px; text-align: center; box-shadow: 0 0 25px rgba(0, 255, 102, 0.15);
     }
     .input-field {
-      background: #000; border: 1px solid #00ff00; color: #00ff00; padding: 8px; font-family: monospace; font-size: 16px; width: 80%; margin-bottom: 15px; text-align: center; outline: none;
+      background: #000; border: 1px solid #00ff66; color: #00ff66; padding: 8px; font-family: monospace; font-size: 16px; width: 80%; margin-bottom: 15px; text-align: center; outline: none;
     }
-    .btn-connect { background: #00ff00; color: #000; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; font-family: monospace; font-size: 16px; }
-    .btn-connect:hover { background: #ffff00; }
+    .btn-connect { background: #00ff66; color: #000; border: none; padding: 12px 24px; font-weight: bold; cursor: pointer; font-family: monospace; font-size: 16px; text-transform: uppercase; }
 
     /* Combat Kill Feed */
     #kill-feed {
-      position: absolute; top: 20px; right: 20px; width: 300px;
-      font-family: monospace; font-size: 12px; color: #ffaa00;
+      position: absolute; top: 20px; right: 20px; width: 260px;
+      font-family: monospace; font-size: 11px; color: #ffaa00;
       text-align: right; pointer-events: none; z-index: 30;
       display: flex; flex-direction: column; gap: 4px;
       text-shadow: 1px 1px #000;
@@ -44,39 +41,60 @@
 
     /* Text Chat Box Array */
     #chat-box {
-      position: absolute; bottom: 100px; left: 20px; width: 360px;
-      height: 160px; pointer-events: none; z-index: 35;
+      position: absolute; bottom: 100px; left: 20px; width: 320px;
+      height: 140px; pointer-events: none; z-index: 35;
       display: flex; flex-direction: column; justify-content: flex-end;
-      font-family: monospace; font-size: 13px; text-shadow: 1px 1px #000;
+      font-family: monospace; font-size: 12px; text-shadow: 1px 1px #000;
     }
-    #chat-log { overflow: hidden; display: flex; flex-direction: column; gap: 3px; color: #ffffff; background: rgba(0,0,0,0.5); padding: 6px; border-radius: 4px; }
+    #chat-log { overflow: hidden; display: flex; flex-direction: column; gap: 3px; color: #ffffff; background: rgba(0,0,0,0.6); padding: 6px; border-radius: 4px; }
     #chat-input {
-      background: #111; border: 2px solid #ff3300; color: #00ff00;
-      padding: 6px; font-family: monospace; font-size: 13px; outline: none;
+      background: #0a0a0a; border: 2px solid #ff2200; color: #00ff66;
+      padding: 6px; font-family: monospace; font-size: 12px; outline: none;
       margin-top: 5px; pointer-events: auto; display: none; width: 100%; box-sizing: border-box;
     }
 
-    /* Cooldown Overlay Alert */
     #cooldown-alert {
       position: absolute; top: 60%; left: 50%; transform: translate(-50%, -50%);
-      font-family: monospace; font-size: 14px; color: #ff3333;
+      font-family: monospace; font-size: 13px; color: #ff2200;
       font-weight: bold; display: none; z-index: 25; letter-spacing: 2px;
-      text-shadow: 1px 1px #000; background: rgba(0,0,0,0.8); padding: 6px 12px; border: 1px solid #ff3333;
+      text-shadow: 1px 1px #000; background: rgba(0,0,0,0.85); padding: 6px 12px; border: 1px solid #ff2200;
     }
 
     /* Doom-Style Status Bar */
     #status-bar {
       position: absolute; bottom: 0; left: 0; width: 100%; height: 80px;
-      background: #2b2b2a; border-top: 6px solid #444443;
+      background: #1a1a1a; border-top: 6px solid #333333;
       display: none; grid-template-columns: repeat(5, 1fr);
-      align-items: center; text-align: center; z-index: 10;
-      box-sizing: border-box; color: #ff3333; font-size: 16px;
+      align-items: center; text-align: center; z-index: 40;
+      box-sizing: border-box; color: #ff2200; font-size: 14px;
     }
-    .status-node { border-right: 4px solid #1c1c1b; border-left: 2px solid #3d3d3c; height: 100%; display: flex; flex-direction: column; justify-content: center; }
-    .status-val { font-size: 32px; color: #ff0000; font-weight: bold; text-shadow: 2px 2px #440000; font-family: monospace; }
-    .status-title { font-size: 11px; color: #8a8a85; font-family: monospace; margin-bottom: 2px; }
+    .status-node { border-right: 4px solid #0d0d0d; border-left: 2px solid #262626; height: 100%; display: flex; flex-direction: column; justify-content: center; }
+    .status-val { font-size: 28px; color: #ff2200; font-weight: bold; text-shadow: 2px 2px #330000; font-family: monospace; }
+    .status-title { font-size: 10px; color: #777777; font-family: monospace; margin-bottom: 2px; }
 
-    #crosshair { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 8px; height: 8px; border: 2px solid #ff0000; pointer-events: none; z-index: 20; }
+    #crosshair { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 10px; height: 10px; border: 2px solid #ff2200; border-radius: 50%; pointer-events: none; z-index: 20; }
+
+    /* Touch Interface Framework Overlays */
+    #mobile-joystick-container {
+      position: absolute; bottom: 100px; left: 30px; width: 120px; height: 120px;
+      background: rgba(255,255,255,0.06); border: 2px solid rgba(0,255,102,0.2);
+      border-radius: 50%; z-index: 50; display: none; align-items: center; justify-content: center;
+    }
+    #mobile-joystick-stick {
+      width: 45px; height: 45px; background: rgba(0,255,102,0.4); border: 1px solid #00ff66; border-radius: 50%;
+    }
+    #mobile-fire-button {
+      position: absolute; bottom: 110px; right: 40px; width: 85px; height: 85px;
+      background: rgba(255,34,0,0.2); border: 3px solid #ff2200; border-radius: 50%;
+      z-index: 50; display: none; align-items: center; justify-content: center;
+      color: #ff2200; font-weight: bold; font-family: monospace; font-size: 16px;
+    }
+    #mobile-ads-button {
+      position: absolute; bottom: 215px; right: 55px; width: 60px; height: 60px;
+      background: rgba(0,255,102,0.1); border: 2px solid #00ff66; border-radius: 50%;
+      z-index: 50; display: none; align-items: center; justify-content: center;
+      color: #00ff66; font-family: monospace; font-size: 11px; font-weight: bold;
+    }
   </style>
   
   <script src="https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.min.js"></script>
@@ -84,9 +102,10 @@
 </head>
 <body>
 
+  <!-- LIVE NETWORK INITIALIZATION LOBBY -->
   <div id="terminal-lobby">
-    <div class="terminal-title">SLUDGECORE MULTIPLAYER OVERHAUL</div>
-    <div style="color: #889988; margin-bottom: 25px;">STABLE WEBRTC P2P DEPLOYMENT NODE</div>
+    <div class="terminal-title">SLUDGECORE UNIFIED ENGINE</div>
+    <div style="color: #668877; margin-bottom: 25px; text-align: center; font-size: 12px;">CROSS-PLATFORM ENGINE // PC - MOBILE - GAMEPAD</div>
     
     <div class="setup-box">
       <div style="color: #ffff00; margin-bottom: 5px; font-size: 13px;">CLUSTER LOBBY ID:</div>
@@ -95,7 +114,7 @@
       <div style="color: #ffff00; margin-bottom: 5px; font-size: 13px;">PILOT CALLSIGN:</div>
       <input type="text" id="username-field" class="input-field" value="User_Alpha" maxlength="14">
       <br>
-      <button class="btn-connect" onclick="initializeLiveNetwork()">INITIALIZE_P2P_LINK</button>
+      <button class="btn-connect" onclick="initializeLiveNetwork()">INITIALIZE_SYSTEMS</button>
     </div>
   </div>
 
@@ -103,11 +122,18 @@
   <div id="kill-feed"></div>
   <div id="cooldown-alert">BOLT_CYCLE_LOCK_ACTIVE</div>
 
+  <!-- TOUCH SYSTEM ACTUATORS -->
+  <div id="mobile-joystick-container"><div id="mobile-joystick-stick"></div></div>
+  <div id="mobile-fire-button">FIRE</div>
+  <div id="mobile-ads-button">ADS</div>
+
+  <!-- TEXT CHAT LOG OVERLAY CONTAINER -->
   <div id="chat-box">
     <div id="chat-log"></div>
     <input type="text" id="chat-input" placeholder="BROADCAST PACKET STRING..." maxlength="50">
   </div>
 
+  <!-- STATUS DASHBOARD -->
   <div id="status-bar">
     <div class="status-node">
       <span class="status-title">AMMO CAP</span>
@@ -115,12 +141,12 @@
     </div>
     <div class="status-node">
       <span class="status-title">LINK VITALS</span>
-      <span id="hp-display" class="status-val" style="color: #00ff00;">100%</span>
+      <span id="hp-display" class="status-val" style="color: #00ff66;">100%</span>
     </div>
     
-    <div class="status-node" id="voice-node" style="background: #1f1f1e; border: 1px dashed #444;">
-      <span class="status-title" id="voice-label" style="color: #888;">VOICE MATRIX</span>
-      <span id="voice-status" style="color: #666; font-size: 15px; font-weight: bold; letter-spacing: 1px; font-family: monospace;">STDBY [V]</span>
+    <div class="status-node" id="voice-node" style="background: #141414; border: 1px dashed #333;">
+      <span class="status-title" id="voice-label" style="color: #666;">VOICE MATRIX</span>
+      <span id="voice-status" style="color: #444; font-size: 12px; font-weight: bold; font-family: monospace;">STDBY [V]</span>
     </div>
 
     <div class="status-node">
@@ -129,7 +155,7 @@
     </div>
     <div class="status-node" style="border-right: none;">
       <span class="status-title">PEER LINKS</span>
-      <span id="peer-count-display" class="status-val" style="color: #ffaa00; font-size: 26px;">00</span>
+      <span id="peer-count-display" class="status-val" style="color: #ffaa00;">00</span>
     </div>
   </div>
 
@@ -148,7 +174,7 @@ const LEVEL_GRID = [
   [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
 ];
 const SCALE = 10;
-const pixelScale = 3.5;
+const pixelScale = 1.5;
 
 let scene, camera, renderer, clock;
 let player = { pos: new THREE.Vector3(15, 3.5, 15), rot: new THREE.Vector3(0, 0, 0), speed: 0.16, health: 100, name: '' };
@@ -156,16 +182,21 @@ let keys = {};
 let isEngineActive = false;
 let isChatOpen = false;
 
-// Weapon Lock Framework
+// Realism Weapon Configuration
 let canShoot = true;
 const FIRE_DELAY = 980; 
 
+// ADS (Aim Down Sights) Variables
+let isAiming = false;
+const NORMAL_FOV = 65;
+const ADS_FOV = 42;
+
 const walls = [];
 const activeSparks = [];
-let weaponGroup, muzzleFlashObj;
+let weaponGroup, flashLight, muzzleFlashLight;
 let killCount = 0;
 
-// Networking Setup
+// WebRTC Infrastructure Matrix
 let roomClusterId = '';
 let myPeerId = '';
 let peer = null;
@@ -173,27 +204,41 @@ let dataConnections = {};
 let activePeers3D = {};   
 let localAudioStream = null;
 
-function generateGrittyTexture() {
-  const canvas = document.createElement('canvas'); canvas.width = 64; canvas.height = 64;
-  const ctx = canvas.getContext('2d');
-  ctx.fillStyle = '#2b2e24'; ctx.fillRect(0, 0, 64, 64);
-  for (let x = 0; x < 64; x += 2) {
-    for (let y = 0; y < 64; y += 2) {
-      const rand = Math.random();
-      if (rand > 0.92) ctx.fillStyle = '#11140e';
-      else if (rand > 0.85) ctx.fillStyle = '#4a3d2c';
-      else if (rand > 0.65) ctx.fillStyle = '#32372a';
-      else ctx.fillStyle = '#2b2e24';
-      ctx.fillRect(x, y, 2, 2);
-    }
+// Unified Mobile Input Vector Stores
+let isMobileUser = false;
+let touchMoveId = null, touchLookId = null;
+let joyStart = new THREE.Vector2(), joyMove = new THREE.Vector2();
+let mobileMoveVector = new THREE.Vector2();
+let lookLastPos = new THREE.Vector2();
+
+function checkPlatformHardwareSignature() {
+  if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+    isMobileUser = true;
+    document.getElementById('mobile-joystick-container').style.display = 'flex';
+    document.getElementById('mobile-fire-button').style.display = 'flex';
+    document.getElementById('mobile-ads-button').style.display = 'flex';
   }
-  ctx.fillStyle = '#181b13'; ctx.fillRect(0, 0, 64, 4); ctx.fillRect(0, 30, 64, 4); ctx.fillRect(0, 60, 64, 4);
+}
+
+function generatePBRTextures() {
+  const canvas = document.createElement('canvas'); canvas.width = 128; canvas.height = 128;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#262927'; ctx.fillRect(0, 0, 128, 128);
+  for (let i = 0; i < 1000; i++) {
+    let x = Math.random() * 128; let y = Math.random() * 128;
+    ctx.fillStyle = Math.random() > 0.5 ? '#1a1d1b' : '#333835';
+    ctx.fillRect(x, y, 2, 2);
+  }
+  ctx.strokeStyle = '#111312'; ctx.lineWidth = 2;
+  for(let i=0; i<=128; i+=32) {
+    ctx.strokeRect(i, 0, i, 128); ctx.strokeRect(0, i, 128, i);
+  }
   const texture = new THREE.CanvasTexture(canvas);
-  texture.magFilter = THREE.NearestFilter; texture.minFilter = THREE.NearestFilter;
   return texture;
 }
 
 async function initializeLiveNetwork() {
+  checkPlatformHardwareSignature();
   player.name = document.getElementById('username-field').value.trim() || 'Pilot_Link';
   roomClusterId = document.getElementById('room-field').value.trim() || 'THORNTON_GRID_01';
   
@@ -201,7 +246,7 @@ async function initializeLiveNetwork() {
     localAudioStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
     localAudioStream.getAudioTracks()[0].enabled = false;
   } catch(err) {
-    console.warn("Audio hardware initialization bypassed.");
+    console.warn("Local micro capture bypassed.");
   }
 
   document.getElementById('terminal-lobby').style.display = 'none';
@@ -211,7 +256,7 @@ async function initializeLiveNetwork() {
   peer = new Peer(myPeerId);
 
   peer.on('open', (id) => {
-    pushNotification(`Data Synced. Core Tag: [${player.name}]`);
+    pushNotification(`Matrix Linked: [${player.name}]`);
     localStorage.setItem('sludgecore_ping_' + roomClusterId, myPeerId + ':' + Date.now());
     hookDiscoverySignaling();
   });
@@ -225,7 +270,6 @@ async function initializeLiveNetwork() {
 function hookDiscoverySignaling() {
   setInterval(() => {
     if(!peer || peer.destroyed) return;
-    
     document.getElementById('peer-count-display').innerText = String(Object.keys(dataConnections).length).padStart(2, '0');
 
     broadcastPayload({
@@ -261,9 +305,9 @@ function setupDataConnectionListeners(conn) {
   dataConnections[conn.peer] = conn;
   conn.on('data', (data) => {
     if(data.type === 'transform') updateRemotePlayerEntity(conn.peer, data);
-    if(data.type === 'chat') pushChatMessage(data.sender, data.text, '#ffff00');
+    if(data.type === 'chat') pushChatMessage(data.sender, data.text, '#00ff66');
     if(data.type === 'voice_ptt') toggleVoiceHUDIndicator(data.sender, data.isActive);
-    if(data.type === 'frag') pushNotification(`[${data.killer}] swept [${data.victim}]`);
+    if(data.type === 'frag') pushNotification(`[${data.killer}] neutralized [${data.victim}]`);
   });
   conn.on('close', () => { removeRemotePlayerEntity(conn.peer); delete dataConnections[conn.peer]; });
 }
@@ -271,8 +315,7 @@ function setupDataConnectionListeners(conn) {
 function setupVoiceStreamListeners(call) {
   call.on('stream', (remoteStream) => {
     const audioNode = document.createElement('audio');
-    audioNode.srcObject = remoteStream;
-    audioNode.autoplay = true;
+    audioNode.srcObject = remoteStream; audioNode.autoplay = true;
     document.body.appendChild(audioNode);
   });
 }
@@ -285,163 +328,270 @@ function broadcastPayload(obj) {
 
 function updateRemotePlayerEntity(peerId, data) {
   if (!activePeers3D[peerId]) {
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(2.0, 4.0, 2.0), new THREE.MeshBasicMaterial({ color: 0x5a635c }));
-    const helmet = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.2, 1.2), new THREE.MeshBasicMaterial({ color: 0x00ffff }));
-    helmet.position.set(0, 2.3, 0); mesh.add(helmet);
-    scene.add(mesh);
-    activePeers3D[peerId] = { mesh: mesh, name: data.name };
-    pushNotification(`Link Synced: [${data.name}]`);
+    const group = new THREE.Group();
+    const bodyMat = new THREE.MeshStandardMaterial({ color: 0x222523, roughness: 0.4, metalness: 0.7 });
+    
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(2.0, 4.0, 2.0), bodyMat);
+    mesh.castShadow = true; mesh.receiveShadow = true; group.add(mesh);
+    
+    const helmet = new THREE.Mesh(new THREE.BoxGeometry(1.3, 1.3, 1.3), new THREE.MeshStandardMaterial({ color: 0x050505, roughness: 0.1, metalness: 0.9 }));
+    helmet.position.set(0, 2.3, 0); group.add(helmet);
+    
+    const visor = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.4, 0.4), new THREE.MeshBasicMaterial({ color: 0xff0033 }));
+    visor.position.set(0, 2.4, -0.5); group.add(visor);
+
+    scene.add(group);
+    activePeers3D[peerId] = { group: group, name: data.name };
+    pushNotification(`Linked: [${data.name}]`);
   }
   const pObj = activePeers3D[peerId];
-  pObj.mesh.position.set(data.x, 2.0, data.z);
-  pObj.mesh.rotation.y = data.ry;
+  pObj.group.position.set(data.x, 2.0, data.z);
+  pObj.group.rotation.y = data.ry;
 }
 
 function removeRemotePlayerEntity(peerId) {
   if (activePeers3D[peerId]) {
-    pushNotification(`[${activePeers3D[peerId].name}] broken array`);
-    scene.remove(activePeers3D[peerId].mesh);
+    pushNotification(`[${activePeers3D[peerId].name}] array dropped`);
+    scene.remove(activePeers3D[peerId].group);
     delete activePeers3D[peerId];
   }
 }
 
 // ======================================================
-// ================= ENGINE INITIALIZATION ==============
+// ================= CORE ENGINE SETUP ==================
 // ======================================================
 function initThreeEngine() {
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x050605);
-  scene.fog = new THREE.FogExp2(0x050605, 0.045);
+  scene.background = new THREE.Color(0x010202);
+  scene.fog = new THREE.FogExp2(0x010202, 0.035);
 
-  camera = new THREE.PerspectiveCamera(55, window.innerWidth / (window.innerHeight - 80), 0.1, 300);
-  camera.position.copy(player.pos);
-  scene.add(camera);
+  camera = new THREE.PerspectiveCamera(NORMAL_FOV, window.innerWidth / (window.innerHeight - 80), 0.1, 400);
+  camera.position.copy(player.pos); scene.add(camera);
 
-  renderer = new THREE.WebGLRenderer({ antialias: false });
+  renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.setSize(window.innerWidth / pixelScale, (window.innerHeight - 80) / pixelScale, false);
   document.body.appendChild(renderer.domElement);
 
   clock = new THREE.Clock();
-  scene.add(new THREE.AmbientLight(0x888888));
+  scene.add(new THREE.AmbientLight(0x0a0f0c));
 
-  buildGrittyWorld();
-  buildCenteredWeapon();
+  flashLight = new THREE.SpotLight(0xffffff, 4.5, 90, Math.PI / 5, 0.6, 1.2);
+  flashLight.castShadow = true;
+  camera.add(flashLight); camera.add(flashLight.target);
+  flashLight.target.position.set(0, 0, -1);
 
-  // POINTER LOCK & INPUT ACTION REGISTRATIONS
+  muzzleFlashLight = new THREE.PointLight(0xff5500, 0, 35);
+  scene.add(muzzleFlashLight);
+
+  buildAAAEnvironment();
+  buildRealisticWeapon();
+
+  // Prevent browser context menu from displaying on Right Click
+  window.addEventListener('contextmenu', (e) => e.preventDefault());
+
+  // Desktop Interface Registrations
   renderer.domElement.addEventListener('click', () => {
-    if (!isChatOpen) renderer.domElement.requestPointerLock();
+    if (!isChatOpen && !isMobileUser) renderer.domElement.requestPointerLock();
   });
 
   window.addEventListener('keydown', handleKeySystemDown);
   window.addEventListener('keyup', handleKeySystemUp);
   document.addEventListener('mousemove', handleGrittyLook);
-  window.addEventListener('mousedown', fireWeaponSystem);
+  
+  window.addEventListener('mousedown', (e) => { 
+    if(!isMobileUser) {
+      if (e.button === 0) fireWeaponSystem(); // Left Click
+      if (e.button === 2) isAiming = true;     // Right Click
+    }
+  });
+
+  window.addEventListener('mouseup', (e) => {
+    if(!isMobileUser && e.button === 2) isAiming = false;
+  });
+
+  // Native Mobile Touch Integration Layers
+  if (isMobileUser) registerTouchSensors();
 
   isEngineActive = true;
   mainEngineLoop();
 }
 
-function buildGrittyWorld() {
-  const sludgeTex = generateGrittyTexture();
+function buildAAAEnvironment() {
+  const wallTexture = generatePBRTextures();
   const blockGeo = new THREE.BoxGeometry(SCALE, SCALE, SCALE);
-  const wallMat = new THREE.MeshLambertMaterial({ map: sludgeTex });
+  const pbrWallMat = new THREE.MeshStandardMaterial({ map: wallTexture, roughness: 0.35, metalness: 0.65 });
 
   for (let r = 0; r < LEVEL_GRID.length; r++) {
     for (let c = 0; c < LEVEL_GRID[r].length; c++) {
       if (LEVEL_GRID[r][c] === 1) {
-        const wallBlock = new THREE.Mesh(blockGeo, wallMat);
+        const wallBlock = new THREE.Mesh(blockGeo, pbrWallMat);
         wallBlock.position.set(c * SCALE, SCALE / 2, r * SCALE);
+        wallBlock.castShadow = true; wallBlock.receiveShadow = true;
         scene.add(wallBlock); walls.push(wallBlock);
       }
     }
   }
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(500, 500), new THREE.MeshLambertMaterial({ color: 0x121411 }));
-  floor.rotation.x = -Math.PI / 2; scene.add(floor);
+
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(600, 600), new THREE.MeshStandardMaterial({ color: 0x141615, roughness: 0.5, metalness: 0.8 }));
+  floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+
+  const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(600, 600), new THREE.MeshStandardMaterial({ color: 0x0c0e0d, roughness: 0.7 }));
+  ceiling.position.y = SCALE; ceiling.rotation.x = Math.PI / 2; ceiling.receiveShadow = true; scene.add(ceiling);
 }
 
-function buildCenteredWeapon() {
+function buildRealisticWeapon() {
   weaponGroup = new THREE.Group();
-  const baseFrame = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.35, 0.6), new THREE.MeshBasicMaterial({ color: 0x444845 }));
-  const barrel = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.06, 0.5), new THREE.MeshBasicMaterial({ color: 0x1f2120 }));
-  barrel.position.set(0, 0.1, -0.4); baseFrame.add(barrel);
-
-  muzzleFlashObj = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, 0.2), new THREE.MeshBasicMaterial({ color: 0xffcc00 }));
-  muzzleFlashObj.position.set(0, 0.1, -0.7); muzzleFlashObj.visible = false;
-  baseFrame.add(muzzleFlashObj);
-
-  baseFrame.position.set(0, -0.28, -0.55); weaponGroup.add(baseFrame);
+  const baseFrame = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.22, 0.65), new THREE.MeshStandardMaterial({ color: 0x1c1e1d, roughness: 0.2, metalness: 0.85 }));
+  const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.4), new THREE.MeshStandardMaterial({ color: 0x0a0a0a, metalness: 0.9 }));
+  barrel.rotation.x = Math.PI / 2; barrel.position.set(0, 0.04, -0.4); baseFrame.add(barrel);
+  
+  // Base Hip Position Coordinates
+  baseFrame.position.set(0.18, -0.24, -0.5); 
+  weaponGroup.add(baseFrame);
   camera.add(weaponGroup);
 }
 
 // ======================================================
-// ================= RUNTIME CORE FUNCTIONS =============
+// ================= INTERFACE & CONTROLS CONTROL =======
 // ======================================================
 function handleKeySystemDown(e) {
-  if (e.code === 'Enter') {
-    e.preventDefault();
-    toggleTextChat();
-    return;
-  }
-  
+  if (e.code === 'Enter') { e.preventDefault(); toggleTextChat(); return; }
   if (isChatOpen) return;
   keys[e.code] = true;
-
-  if (e.code === 'KeyV' && localAudioStream) {
-    localAudioStream.getAudioTracks()[0].enabled = true;
-    broadcastPayload({ type: 'voice_ptt', sender: player.name, isActive: true });
-    toggleVoiceHUDIndicator('You', true);
-  }
 }
 
 function handleKeySystemUp(e) {
   if (isChatOpen) return;
   keys[e.code] = false;
-
-  if (e.code === 'KeyV' && localAudioStream) {
-    localAudioStream.getAudioTracks()[0].enabled = false;
-    broadcastPayload({ type: 'voice_ptt', sender: player.name, isActive: false });
-    toggleVoiceHUDIndicator('You', false);
-  }
 }
 
 function handleGrittyLook(e) {
-  // Lock checking restriction directly tied to canvas pointer visibility tracking
-  if (document.pointerLockElement !== renderer.domElement || isChatOpen) return;
+  if (document.pointerLockElement !== renderer.domElement || isChatOpen || isMobileUser) return;
   
-  player.rot.y -= e.movementX * 0.0030;
-  player.rot.x -= e.movementY * 0.0030;
-  player.rot.x = Math.max(-Math.PI / 2.5, Math.min(Math.PI / 2.5, player.rot.x));
+  // Scale looking sensitivity down when tracking targets inside ADS
+  let sensitivityFactor = isAiming ? 0.0011 : 0.0022;
+  
+  player.rot.y -= e.movementX * sensitivityFactor;
+  player.rot.x -= e.movementY * sensitivityFactor;
+  player.rot.x = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, player.rot.x));
 }
 
-function toggleVoiceHUDIndicator(senderName, isActive) {
-  const node = document.getElementById('voice-node');
-  if(isActive) {
-    node.style.background = '#441111'; node.style.borderColor = '#ff3333';
-    document.getElementById('voice-label').style.color = '#ff3333';
-    document.getElementById('voice-status').innerText = `${senderName.toUpperCase()} TALK`;
-    document.getElementById('voice-status').style.color = '#ff3333';
-  } else {
-    node.style.background = '#1f1f1e'; node.style.borderColor = '#444';
-    document.getElementById('voice-label').style.color = '#888';
-    document.getElementById('voice-status').innerText = 'STDBY [V]';
-    document.getElementById('voice-status').style.color = '#666';
-  }
+// ======================================================
+// ================= MOBILE TOUCH PIPELINES =============
+// ======================================================
+function registerTouchSensors() {
+  const joyContainer = document.getElementById('mobile-joystick-container');
+  const joyStick = document.getElementById('mobile-joystick-stick');
+  const fireBtn = document.getElementById('mobile-fire-button');
+  const adsBtn = document.getElementById('mobile-ads-button');
+
+  fireBtn.addEventListener('touchstart', (e) => { e.preventDefault(); fireWeaponSystem(); });
+  
+  // Mobile uses a toggle model for ADS comfort
+  adsBtn.addEventListener('touchstart', (e) => { 
+    e.preventDefault(); 
+    isAiming = !isAiming;
+    adsBtn.style.background = isAiming ? "rgba(0,255,102,0.4)" : "rgba(0,255,102,0.1)";
+  });
+
+  window.addEventListener('touchstart', (e) => {
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      const t = e.changedTouches[i];
+      if (t.clientX < window.innerWidth / 2) {
+        if (touchMoveId === null) {
+          touchMoveId = t.identifier;
+          joyStart.set(t.clientX, t.clientY);
+        }
+      } else {
+        if (t.target !== fireBtn && t.target !== adsBtn && touchLookId === null) {
+          touchLookId = t.identifier;
+          lookLastPos.set(t.clientX, t.clientY);
+        }
+      }
+    }
+  });
+
+  window.addEventListener('touchmove', (e) => {
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      const t = e.changedTouches[i];
+      if (t.identifier === touchMoveId) {
+        joyMove.set(t.clientX, t.clientY);
+        let dist = joyStart.distanceTo(joyMove);
+        let dir = new THREE.Vector2().subVectors(joyMove, joyStart).normalize();
+        let maxDist = 50;
+        if (dist > maxDist) dist = maxDist;
+        
+        joyStick.style.transform = `translate(${dir.x * dist}px, ${dir.y * dist}px)`;
+        mobileMoveVector.copy(dir).multiplyScalar(dist / maxDist);
+      }
+      if (t.identifier === touchLookId) {
+        let dx = t.clientX - lookLastPos.x;
+        let dy = t.clientY - lookLastPos.y;
+        let sensitivityFactor = isAiming ? 0.0025 : 0.005;
+        
+        player.rot.y -= dx * sensitivityFactor;
+        player.rot.x -= dy * 0.005;
+        player.rot.x = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, player.rot.x));
+        lookLastPos.set(t.clientX, t.clientY);
+      }
+    }
+  });
+
+  window.addEventListener('touchend', (e) => {
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      const t = e.changedTouches[i];
+      if (t.identifier === touchMoveId) {
+        touchMoveId = null;
+        joyStick.style.transform = `translate(0px, 0px)`;
+        mobileMoveVector.set(0, 0);
+      }
+      if (t.identifier === touchLookId) touchLookId = null;
+    }
+  });
+}
+
+// ======================================================
+// ================= CONTROLLER GAMEPAD POLLING =========
+// ======================================================
+function processGamepadHardwareInputs() {
+  const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+  const gp = gamepads[0];
+  if (!gp) return null;
+
+  let out = { moveX: 0, moveZ: 0, lookX: 0, lookY: 0, fire: false, ads: false };
+  
+  // Stick Threshold Filtering
+  if (Math.abs(gp.axes[0]) > 0.15) out.moveX = gp.axes[0];
+  if (Math.abs(gp.axes[1]) > 0.15) out.moveZ = gp.axes[1];
+  if (Math.abs(gp.axes[2]) > 0.15) out.lookX = gp.axes[2];
+  if (Math.abs(gp.axes[3]) > 0.15) out.lookY = gp.axes[3];
+
+  // Map R2 / RT Trigger for Firing (Index 7 standard mapping)
+  if (gp.buttons[7] && gp.buttons[7].pressed) out.fire = true;
+  if (gp.buttons[0] && gp.buttons[0].pressed) out.fire = true;
+
+  // Map L2 / LT Trigger for Aim Down Sights (Index 6 standard mapping)
+  if (gp.buttons[6] && gp.buttons[6].pressed) out.ads = true;
+
+  return out;
 }
 
 function toggleTextChat() {
   const input = document.getElementById('chat-input');
   if (!isChatOpen) {
-    isChatOpen = true; keys = {}; // Clear keys array to drop drifting movement while typing
-    input.style.display = 'block'; input.focus();
-    document.exitPointerLock();
+    isChatOpen = true; keys = {}; input.style.display = 'block'; input.focus();
+    if(!isMobileUser) document.exitPointerLock();
   } else {
     isChatOpen = false;
     if (input.value.trim() !== "") {
-      pushChatMessage(player.name, input.value, '#00ff00');
+      pushChatMessage(player.name, input.value, '#00ff66');
       broadcastPayload({ type: 'chat', sender: player.name, text: input.value });
     }
     input.value = ""; input.style.display = 'none';
-    renderer.domElement.requestPointerLock();
+    if(!isMobileUser) renderer.domElement.requestPointerLock();
   }
 }
 
@@ -454,54 +604,51 @@ function pushChatMessage(sender, text, colorHex) {
 }
 
 function fireWeaponSystem() {
-  if (document.pointerLockElement !== renderer.domElement || isChatOpen) return;
+  if ((!isMobileUser && document.pointerLockElement !== renderer.domElement) && !navigator.getGamepads()[0]) return;
+  if (isChatOpen) return;
   
   if (!canShoot) {
     const alertEl = document.getElementById('cooldown-alert');
-    alertEl.style.display = 'block';
-    setTimeout(() => { alertEl.style.display = 'none'; }, 200);
+    alertEl.style.display = 'block'; setTimeout(() => { alertEl.style.display = 'none'; }, 200);
     return;
   }
 
   canShoot = false;
-  weaponGroup.children[0].position.z += 0.22;
-  muzzleFlashObj.visible = true;
+  weaponGroup.children[0].position.z += 0.14; // Recoil offset
+  
+  muzzleFlashLight.position.copy(player.pos).add(new THREE.Vector3(0,0.1,-0.5).applyQuaternion(camera.quaternion));
+  muzzleFlashLight.intensity = 12.0;
 
-  setTimeout(() => { muzzleFlashObj.visible = false; }, 120);
+  setTimeout(() => { muzzleFlashLight.intensity = 0; }, 60);
   setTimeout(() => { canShoot = true; }, FIRE_DELAY);
 
   const raycaster = new THREE.Raycaster();
   raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
 
   let activeTargets = []; let peerIdMaps = [];
-  for(let id in activePeers3D) { activeTargets.push(activePeers3D[id].mesh); peerIdMaps.push(id); }
+  for(let id in activePeers3D) { activeTargets.push(activePeers3D[id].group.children[0]); peerIdMaps.push(id); }
 
   const hits = raycaster.intersectObjects(activeTargets);
   if (hits.length > 0) {
-    const tMesh = hits[0].object;
-    const hitIdx = activeTargets.indexOf(tMesh);
-    const peerId = peerIdMaps[hitIdx];
-    
-    spawnChunkyBlood(hits[0].point, 0xff0000, 12);
+    const peerId = peerIdMaps[activeTargets.indexOf(hits[0].object)];
+    spawnAAAFluidSparks(hits[0].point, 0xff0022, 24);
     broadcastPayload({ type: 'frag', killer: player.name, victim: activePeers3D[peerId].name });
-    
-    killCount++;
-    document.getElementById('score-display').innerText = String(killCount).padStart(2, '0');
+    killCount++; document.getElementById('score-display').innerText = String(killCount).padStart(2, '0');
   } else {
     const wallHits = raycaster.intersectObjects(walls);
-    if (wallHits.length > 0) spawnChunkyBlood(wallHits[0].point, 0x4a3d2c, 4);
+    if (wallHits.length > 0) spawnAAAFluidSparks(wallHits[0].point, 0xffaa00, 8);
   }
 }
 
-function spawnChunkyBlood(pos, colorHex, count) {
-  const cGeo = new THREE.BoxGeometry(0.25, 0.25, 0.25);
+function spawnAAAFluidSparks(pos, colorHex, count) {
+  const cGeo = new THREE.BoxGeometry(0.12, 0.12, 0.12);
   const cMat = new THREE.MeshBasicMaterial({ color: colorHex });
   for (let i = 0; i < count; i++) {
     const chunk = new THREE.Mesh(cGeo, cMat); chunk.position.copy(pos); scene.add(chunk);
     activeSparks.push({
       mesh: chunk,
-      vel: new THREE.Vector3((Math.random() - 0.5) * 0.5, (Math.random() - 0.2) * 0.4, (Math.random() - 0.5) * 0.5),
-      life: 12
+      vel: new THREE.Vector3((Math.random() - 0.5) * 0.6, (Math.random() - 0.1) * 0.5, (Math.random() - 0.5) * 0.6),
+      life: 20
     });
   }
 }
@@ -520,19 +667,57 @@ function mainEngineLoop() {
   const delta = clock.getDelta();
   const time = clock.getElapsedTime();
 
+  const padState = processGamepadHardwareInputs();
+
   if (!isChatOpen) {
+    // Controller input handling matrix
+    if (padState) {
+      let sensitivityFactor = isAiming ? 0.015 : 0.035;
+      player.rot.y -= padState.lookX * sensitivityFactor;
+      player.rot.x -= padState.lookY * (sensitivityFactor * 0.7);
+      player.rot.x = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, player.rot.x));
+      
+      if (padState.fire) fireWeaponSystem();
+      isAiming = padState.ads; // Controller uses native holding tracking
+    }
+
     camera.rotation.set(0, 0, 0);
     camera.rotation.y = player.rot.y;
     camera.rotation.x = player.rot.x;
 
+    // Handle ADS Lens zoom adjustments dynamically
+    let targetFOV = isAiming ? ADS_FOV : NORMAL_FOV;
+    if (Math.abs(camera.fov - targetFOV) > 0.1) {
+      camera.fov = THREE.MathUtils.lerp(camera.fov, targetFOV, 0.22);
+      camera.updateProjectionMatrix();
+    }
+
     const moveVector = new THREE.Vector3();
+    
+    // Evaluate PC Keyboard Vector Data
     if (keys['KeyW']) moveVector.z -= 1;
     if (keys['KeyS']) moveVector.z += 1;
     if (keys['KeyA']) moveVector.x -= 1;
     if (keys['KeyD']) moveVector.x += 1;
 
+    // Evaluate Mobile Touch Vector Data
+    if (isMobileUser && mobileMoveVector.lengthSq() > 0) {
+      moveVector.x = mobileMoveVector.x;
+      moveVector.z = mobileMoveVector.y;
+    }
+
+    // Evaluate Gamepad Vector Data overrides
+    if (padState && (Math.abs(padState.moveX) > 0 || Math.abs(padState.moveZ) > 0)) {
+      moveVector.x = padState.moveX;
+      moveVector.z = padState.moveZ;
+    }
+
     moveVector.applyAxisAngle(new THREE.Vector3(0, 1, 0), player.rot.y);
-    moveVector.normalize().multiplyScalar(player.speed);
+    if (!isMobileUser && !padState) moveVector.normalize();
+    
+    // Slow down player movement velocity when focused down iron sights
+    let speedModifier = isAiming ? 0.55 : 1.0;
+    moveVector.multiplyScalar(player.speed * speedModifier);
 
     const checkX = player.pos.x + moveVector.x;
     const checkZ = player.pos.z + moveVector.z;
@@ -543,14 +728,22 @@ function mainEngineLoop() {
       player.pos.x = checkX; player.pos.z = checkZ;
     }
 
-    let bobY = -0.28; let bobX = 0;
-    if (keys['KeyW'] || keys['KeyS'] || keys['KeyA'] || keys['KeyD']) {
-      bobY += Math.abs(Math.sin(time * 12)) * 0.04 - 0.02;
-      bobX += Math.cos(time * 6) * 0.03;
+    // Dynamic Weapon Placement Interpolations (Hip vs ADS positions)
+    let targetX = 0.18;
+    let targetY = -0.24;
+    
+    if (isAiming) {
+      targetX = 0.0;     // Align flawlessly down center axis
+      targetY = -0.16;   // Raise up to structural eye-line
+    } else if (moveVector.lengthSq() > 0.001) {
+      // Apply realistic screen movement weapon sway/bobbing while running
+      targetY += Math.sin(time * 10) * 0.015;
+      targetX += Math.cos(time * 5) * 0.01;
     }
-    weaponGroup.children[0].position.x = THREE.MathUtils.lerp(weaponGroup.children[0].position.x, bobX, 0.2);
-    weaponGroup.children[0].position.y = THREE.MathUtils.lerp(weaponGroup.children[0].position.y, bobY, 0.2);
-    weaponGroup.children[0].position.z = THREE.MathUtils.lerp(weaponGroup.children[0].position.z, -0.55, 0.15);
+    
+    weaponGroup.children[0].position.x = THREE.MathUtils.lerp(weaponGroup.children[0].position.x, targetX, 0.22);
+    weaponGroup.children[0].position.y = THREE.MathUtils.lerp(weaponGroup.children[0].position.y, targetY, 0.22);
+    weaponGroup.children[0].position.z = THREE.MathUtils.lerp(weaponGroup.children[0].position.z, -0.5, 0.1);
 
     camera.position.copy(player.pos);
   }
