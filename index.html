@@ -1,271 +1,182 @@
-<!DOCTYPE html>
-<html lang="en">
+@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
-  <title>SLUDGECORE // HYBRID PC & IPAD ENGINE</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SLUDGECORE // OPERATIONAL WAN PROTOCOL</title>
+  <title>SLUDGECORE // TOTAL ENGINE OVERHAUL</title>
   <style>
-    body, html { margin: 0; padding: 0; overflow: hidden; width: 100%; height: 100%; background: #dce3e6; font-family: 'Impact', 'Arial Black', sans-serif; user-select: none; touch-action: none; }
-    
-    canvas {
-      width: 100vw !important;
+    body, html { margin: 0; padding: 0; overflow: hidden; width: 100%; height: 100%; background: #000; font-family: 'Impact', 'Arial Black', sans-serif; user-select: none; }
+
+@@ -12,6 +12,7 @@
       height: calc(100vh - 80px) !important;
+      image-rendering: pixelated;
       display: block;
+      cursor: crosshair;
     }
 
-    /* Connection Initialization Portal */
-    #terminal-lobby {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: #141816; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; z-index: 60;
-      color: #00ff66; font-family: monospace; box-sizing: border-box; padding: 20px;
-    }
-    .terminal-title { font-size: 38px; color: #ff2200; font-family: 'Impact'; text-shadow: 3px 3px #1a0000; letter-spacing: 2px; text-align: center; }
-    
-    .setup-box {
-      background: #1f2421; border: 2px solid #00ff66; padding: 25px; width: 90%; max-width: 500px; text-align: center; box-shadow: 0 0 25px rgba(0, 255, 102, 0.15);
-    }
+    /* DOS Network Terminal Lobby Browser */
+@@ -29,7 +30,7 @@
     .input-field {
-      background: #000; border: 1px solid #00ff66; color: #00ff66; padding: 8px; font-family: monospace; font-size: 16px; width: 80%; margin-bottom: 15px; text-align: center; outline: none;
+      background: #000; border: 1px solid #00ff00; color: #00ff00; padding: 8px; font-family: monospace; font-size: 16px; width: 80%; margin-bottom: 15px; text-align: center; outline: none;
     }
-    .btn-connect { background: #00ff66; color: #000; border: none; padding: 12px 24px; font-weight: bold; cursor: pointer; font-family: monospace; font-size: 16px; text-transform: uppercase; }
+    .btn-connect { background: #00ff00; color: #000; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; font-family: monospace; font-size: 16px; transition: background 0.2s; }
+    .btn-connect { background: #00ff00; color: #000; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; font-family: monospace; font-size: 16px; }
+    .btn-connect:hover { background: #ffff00; }
 
-    /* HUD Elements */
-    #kill-feed {
-      position: absolute; top: 20px; right: 20px; width: 260px;
-      font-family: monospace; font-size: 11px; color: #ffaa00;
-      text-align: right; pointer-events: none; z-index: 30;
-      display: flex; flex-direction: column; gap: 4px;
-      text-shadow: 1px 1px #000;
-    }
-
-    #chat-box {
-      position: absolute; bottom: 100px; left: 20px; width: 320px;
-      height: 140px; pointer-events: none; z-index: 35;
+    /* Combat Kill Feed */
+@@ -48,7 +49,7 @@
       display: flex; flex-direction: column; justify-content: flex-end;
-      font-family: monospace; font-size: 12px; text-shadow: 1px 1px #000;
+      font-family: monospace; font-size: 13px; text-shadow: 1px 1px #000;
     }
-    #chat-log { overflow: hidden; display: flex; flex-direction: column; gap: 3px; color: #ffffff; background: rgba(0,0,0,0.6); padding: 6px; border-radius: 4px; }
+    #chat-log { overflow: hidden; display: flex; flex-direction: column; gap: 3px; color: #ffffff; background: rgba(0,0,0,0.4); border-radius: 4px; padding: 4px; }
+    #chat-log { overflow: hidden; display: flex; flex-direction: column; gap: 3px; color: #ffffff; background: rgba(0,0,0,0.5); padding: 6px; border-radius: 4px; }
     #chat-input {
-      background: #0a0a0a; border: 2px solid #ff2200; color: #00ff66;
-      padding: 6px; font-family: monospace; font-size: 12px; outline: none;
-      margin-top: 5px; pointer-events: auto; display: none; width: 100%; box-sizing: border-box;
-    }
-
-    #cooldown-alert {
+      background: #111; border: 2px solid #ff3300; color: #00ff00;
+      padding: 6px; font-family: monospace; font-size: 13px; outline: none;
+@@ -60,7 +61,7 @@
       position: absolute; top: 60%; left: 50%; transform: translate(-50%, -50%);
-      font-family: monospace; font-size: 13px; color: #ff2200;
+      font-family: monospace; font-size: 14px; color: #ff3333;
       font-weight: bold; display: none; z-index: 25; letter-spacing: 2px;
-      text-shadow: 1px 1px #000; background: rgba(0,0,0,0.85); padding: 6px 12px; border: 1px solid #ff2200;
+      text-shadow: 1px 1px #000; background: rgba(0,0,0,0.75); padding: 6px 12px; border: 1px solid #ff3333;
+      text-shadow: 1px 1px #000; background: rgba(0,0,0,0.8); padding: 6px 12px; border: 1px solid #ff3333;
     }
 
-    /* Status Bar Dashboard */
-    #status-bar {
-      position: absolute; bottom: 0; left: 0; width: 100%; height: 80px;
-      background: #2a2a2a; border-top: 6px solid #444444;
-      display: none; grid-template-columns: repeat(4, 1fr);
-      align-items: center; text-align: center; z-index: 40;
-      box-sizing: border-box; color: #ff2200; font-size: 14px;
-    }
-    .status-node { border-right: 4px solid #1a1a1a; border-left: 2px solid #3a3a3a; height: 100%; display: flex; flex-direction: column; justify-content: center; }
-    .status-val { font-size: 28px; color: #ff2200; font-weight: bold; text-shadow: 2px 2px #330000; font-family: monospace; }
-    .status-title { font-size: 10px; color: #aaaaaa; font-family: monospace; margin-bottom: 2px; }
+    /* Doom-Style Status Bar */
+@@ -75,7 +76,7 @@
+    .status-val { font-size: 32px; color: #ff0000; font-weight: bold; text-shadow: 2px 2px #440000; font-family: monospace; }
+    .status-title { font-size: 11px; color: #8a8a85; font-family: monospace; margin-bottom: 2px; }
 
-    #crosshair { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 10px; height: 10px; border: 2px solid #ff2200; border-radius: 50%; pointer-events: none; z-index: 20; }
-
-    /* Touch Control Surface Formations for iPad */
-    #mobile-joystick-container {
-      position: absolute; bottom: 110px; left: 40px; width: 130px; height: 130px;
-      background: rgba(255,255,255,0.15); border: 3px solid rgba(0,255,102,0.4);
-      border-radius: 50%; z-index: 50; display: none; align-items: center; justify-content: center;
-    }
-    #mobile-joystick-stick {
-      width: 50px; height: 50px; background: rgba(0,255,102,0.6); border: 2px solid #00ff66; border-radius: 50%;
-    }
-    #mobile-fire-button {
-      position: absolute; bottom: 110px; right: 40px; width: 95px; height: 95px;
-      background: rgba(255,34,0,0.4); border: 3px solid #ff2200; border-radius: 50%;
-      z-index: 51; display: none; align-items: center; justify-content: center;
-      color: #fff; font-weight: bold; font-family: monospace; font-size: 18px; text-shadow: 1px 1px #000;
-    }
-    #mobile-ads-button {
-      position: absolute; bottom: 230px; right: 55px; width: 70px; height: 70px;
-      background: rgba(0,255,102,0.2); border: 2px solid #00ff66; border-radius: 50%;
-      z-index: 51; display: none; align-items: center; justify-content: center;
-      color: #00ff66; font-family: monospace; font-size: 13px; font-weight: bold; text-shadow: 1px 1px #000;
-    }
+    #crosshair { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 6px; height: 6px; border: 2px solid #ff0000; pointer-events: none; z-index: 20; }
+    #crosshair { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 8px; height: 8px; border: 2px solid #ff0000; pointer-events: none; z-index: 20; }
   </style>
-  
+
   <script src="https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/peerjs@1.4.7/dist/peerjs.min.js"></script>
-</head>
+@@ -84,21 +85,18 @@
 <body>
 
   <div id="terminal-lobby">
-    <div class="terminal-title">SLUDGECORE UNIFIED ENGINE</div>
-    <div style="color: #88aa99; margin-bottom: 25px; text-align: center; font-size: 12px;">CROSS-PLAY FRAMEWORK // NATIVE PC & IPAD SYSTEM</div>
-    
+    <div class="terminal-title">SLUDGECORE WAN BROADCAST MODULE</div>
+    <div style="color: #889988; margin-bottom: 25px;">REAL-TIME PEER-TO-PEER INTERFACE CONNECTIONS</div>
+    <div class="terminal-title">SLUDGECORE MULTIPLAYER OVERHAUL</div>
+    <div style="color: #889988; margin-bottom: 25px;">STABLE WEBRTC P2P DEPLOYMENT NODE</div>
+
     <div class="setup-box">
+      <div style="color: #ffff00; margin-bottom: 5px; font-size: 13px;">ROOM LINK CLUSTER ID:</div>
       <div style="color: #ffff00; margin-bottom: 5px; font-size: 13px;">CLUSTER LOBBY ID:</div>
       <input type="text" id="room-field" class="input-field" value="THORNTON_GRID_01" maxlength="20">
 
+      <div style="color: #ffff00; margin-bottom: 5px; font-size: 13px;">YOUR HANDLE TAG:</div>
       <div style="color: #ffff00; margin-bottom: 5px; font-size: 13px;">PILOT CALLSIGN:</div>
       <input type="text" id="username-field" class="input-field" value="User_Alpha" maxlength="14">
       <br>
-      <button class="btn-connect" onclick="initializeLiveNetwork()">INITIALIZE_SYSTEMS</button>
+      <button class="btn-connect" onclick="initializeLiveNetwork()">INITIALIZE_P2P_LINK</button>
+    </div>
+    <div style="margin-top: 25px; color: #556655; font-size: 11px; max-width: 500px; text-align: center;">
+      CONTROL CODES: [W,A,S,D] Move // Mouse Look // [Left-Click] Fire // [Enter] Toggle Text Chat Channel // Hold [V] to Transmit Voice Streams.
     </div>
   </div>
 
   <div id="crosshair"></div>
-  <div id="kill-feed"></div>
-  <div id="cooldown-alert">BOLT_CYCLE_LOCK_ACTIVE</div>
-
-  <div id="mobile-joystick-container"><div id="mobile-joystick-stick"></div></div>
-  <div id="mobile-fire-button">FIRE</div>
-  <div id="mobile-ads-button">ADS</div>
-
-  <div id="chat-box">
-    <div id="chat-log"></div>
-    <input type="text" id="chat-input" placeholder="BROADCAST PACKET STRING..." maxlength="50">
-  </div>
-
-  <div id="status-bar">
-    <div class="status-node">
-      <span class="status-title">AMMO CAP</span>
-      <span class="status-val" style="color: #ffff00;">INF</span>
-    </div>
-    <div class="status-node">
-      <span class="status-title">LINK VITALS</span>
-      <span id="hp-display" class="status-val" style="color: #00ff66;">100%</span>
-    </div>
-    <div class="status-node">
-      <span class="status-title">FRAG CODE</span>
-      <span id="score-display" class="status-val" style="color: #00ffff;">00</span>
-    </div>
-    <div class="status-node" style="border-right: none;">
-      <span class="status-title">PEER LINKS</span>
-      <span id="peer-count-display" class="status-val" style="color: #ffaa00;">00</span>
-    </div>
+@@ -136,7 +134,6 @@
   </div>
 
 <script>
+// Structural Level Collisions Array Map
 const LEVEL_GRID = [
   [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
   [1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1],
-  [1,0,1,1,1,0,1,0,1,1,1,1,1,1,0,1],
-  [1,0,1,0,0,0,0,0,0,0,0,1,0,0,0,1],
-  [1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,1],
-  [1,0,0,0,1,0,0,0,0,1,0,0,0,1,0,1],
-  [1,1,1,0,1,0,1,1,0,1,1,1,0,1,0,1],
-  [1,0,0,0,0,0,1,0,0,0,0,1,0,0,0,1],
-  [1,0,1,1,1,1,1,0,1,1,0,1,1,1,0,1],
-  [1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1],
-  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-];
-const SCALE = 10;
-const pixelScale = 1.0; // 1.0 for Native iPad / Retina Resolution clarity
+@@ -154,12 +151,12 @@
+const pixelScale = 3.5;
 
 let scene, camera, renderer, clock;
+let player = { pos: new THREE.Vector3(15, 3.5, 15), rot: new THREE.Vector3(), speed: 0.15, health: 100, name: '' };
 let player = { pos: new THREE.Vector3(15, 3.5, 15), rot: new THREE.Vector3(0, 0, 0), speed: 0.16, health: 100, name: '' };
 let keys = {};
 let isEngineActive = false;
 let isChatOpen = false;
 
-// Weapon Fire Dynamics
+// 0.980 Rate Locking Mechanics Variables
+// Weapon Lock Framework
 let canShoot = true;
 const FIRE_DELAY = 980; 
 
-// ADS Constants
-let isAiming = false;
-const NORMAL_FOV = 65;
-const ADS_FOV = 42;
-
-const walls = [];
-const activeSparks = [];
-let weaponGroup, mainLight, muzzleFlashLight;
+@@ -168,7 +165,7 @@
+let weaponGroup, muzzleFlashObj;
 let killCount = 0;
 
-// Network Orchestration Maps
+// WebRTC Network Sync Topologies
+// Networking Setup
 let roomClusterId = '';
 let myPeerId = '';
 let peer = null;
-let dataConnections = {}; 
-let activePeers3D = {};   
-
-// Explicit Universal Touch State Vectors
-let isTouchHardware = false;
-let touchMoveId = null;
-let touchLookId = null;
-let joyStart = new THREE.Vector2();
-let joyMove = new THREE.Vector2();
-let mobileMoveVector = new THREE.Vector2();
-let lookLastPos = new THREE.Vector2();
-
-function evaluatePlatformArchitecture() {
-  if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
-    isTouchHardware = true;
-    document.getElementById('mobile-joystick-container').style.display = 'flex';
-    document.getElementById('mobile-fire-button').style.display = 'flex';
-    document.getElementById('mobile-ads-button').style.display = 'flex';
-  }
-}
-
-function generateBrightPBRTextures() {
-  const canvas = document.createElement('canvas'); canvas.width = 256; canvas.height = 256;
-  const ctx = canvas.getContext('2d');
-  
-  // Industrial concrete plating coloring parameters
-  ctx.fillStyle = '#b5bcbe'; ctx.fillRect(0, 0, 256, 256);
-  for (let i = 0; i < 3500; i++) {
-    let x = Math.random() * 256; let y = Math.random() * 256;
-    ctx.fillStyle = Math.random() > 0.5 ? '#a3aaad' : '#c3c9cc';
-    ctx.fillRect(x, y, 2, 2);
-  }
-  ctx.strokeStyle = '#788083'; ctx.lineWidth = 3;
-  for(let i=0; i<=256; i+=64) {
-    ctx.strokeRect(i, 0, i, 256); ctx.strokeRect(0, i, 256, i);
-  }
-  const texture = new THREE.CanvasTexture(canvas);
-  return texture;
-}
-
-async function initializeLiveNetwork() {
-  evaluatePlatformArchitecture();
+@@ -200,53 +197,37 @@
   player.name = document.getElementById('username-field').value.trim() || 'Pilot_Link';
   roomClusterId = document.getElementById('room-field').value.trim() || 'THORNTON_GRID_01';
-  
+
+  // Audio Capture Initializations
+  try {
+    localAudioStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+    // Keep mic dead until V key triggers execution block
+    localAudioStream.getAudioTracks()[0].enabled = false;
+  } catch(err) {
+    console.warn("Hardware Mic Unreachable. Text channel connection remains active.");
+    console.warn("Audio hardware initialization bypassed.");
+  }
+
   document.getElementById('terminal-lobby').style.display = 'none';
   document.getElementById('status-bar').style.display = 'grid';
+  document.body.requestPointerLock();
 
+  // Create explicit room coordinate targeting mapping
   myPeerId = 'SLUDGE_' + roomClusterId + '_' + Math.random().toString(36).substr(2, 6);
   peer = new Peer(myPeerId);
 
   peer.on('open', (id) => {
-    pushNotification(`Matrix Linked: [${player.name}]`);
+    pushNotification(`Link Synced. Handle: [${player.name}]`);
+    
+    // Broadcast signature key frames to local tab groups instantly
+    pushNotification(`Data Synced. Core Tag: [${player.name}]`);
     localStorage.setItem('sludgecore_ping_' + roomClusterId, myPeerId + ':' + Date.now());
     hookDiscoverySignaling();
   });
 
+  peer.on('connection', (conn) => {
+    setupDataConnectionListeners(conn);
+  });
+
+  peer.on('call', (call) => {
+    call.answer(localAudioStream);
+    setupVoiceStreamListeners(call);
+  });
   peer.on('connection', (conn) => { setupDataConnectionListeners(conn); });
+  peer.on('call', (call) => { call.answer(localAudioStream); setupVoiceStreamListeners(call); });
+
   initThreeEngine();
 }
 
 function hookDiscoverySignaling() {
+  // Query for structural sister keys every 2.5 seconds to sweep channel array drops
   setInterval(() => {
     if(!peer || peer.destroyed) return;
+
+    // Clear dead entries from local counting HUD
+    const connectedCount = Object.keys(dataConnections).length;
+    document.getElementById('peer-count-display').innerText = String(connectedCount).padStart(2, '0');
     document.getElementById('peer-count-display').innerText = String(Object.keys(dataConnections).length).padStart(2, '0');
 
+    // Pump current state transform matrix down data links
     broadcastPayload({
       type: 'transform',
       name: player.name,
-      x: player.pos.x,
-      z: player.pos.z,
-      ry: player.rot.y
-    });
-  }, 45);
+@@ -258,18 +239,14 @@
 
   window.addEventListener('storage', (e) => {
     if (e.key === 'sludgecore_ping_' + roomClusterId && e.newValue) {
+      const parts = e.newValue.split(':');
+      const targetId = parts[0];
+      if (targetId !== myPeerId) {
+        initiateConnectionToPeerNode(targetId);
+      }
       const targetId = e.newValue.split(':')[0];
       if (targetId !== myPeerId) initiateConnectionToPeerNode(targetId);
     }
@@ -274,407 +185,223 @@ function hookDiscoverySignaling() {
 
 function initiateConnectionToPeerNode(targetId) {
   if (dataConnections[targetId] || targetId === myPeerId) return;
+
   const conn = peer.connect(targetId);
-  conn.on('open', () => { setupDataConnectionListeners(conn); });
-}
+  conn.on('open', () => {
+    setupDataConnectionListeners(conn);
+@@ -282,18 +259,13 @@
 
 function setupDataConnectionListeners(conn) {
   dataConnections[conn.peer] = conn;
+  
   conn.on('data', (data) => {
     if(data.type === 'transform') updateRemotePlayerEntity(conn.peer, data);
-    if(data.type === 'chat') pushChatMessage(data.sender, data.text, '#00ff66');
-    if(data.type === 'frag') pushNotification(`[${data.killer}] neutralized [${data.victim}]`);
+    if(data.type === 'chat') pushChatMessage(data.sender, data.text, '#ffff00');
+    if(data.type === 'voice_ptt') toggleVoiceHUDIndicator(data.sender, data.isActive);
+    if(data.type === 'frag') pushNotification(`[${data.killer}] wiped out [${data.victim}]`);
+  });
+
+  conn.on('close', () => {
+    removeRemotePlayerEntity(conn.peer);
+    delete dataConnections[conn.peer];
+    if(data.type === 'frag') pushNotification(`[${data.killer}] swept [${data.victim}]`);
   });
   conn.on('close', () => { removeRemotePlayerEntity(conn.peer); delete dataConnections[conn.peer]; });
 }
 
+function setupVoiceStreamListeners(call) {
+@@ -307,42 +279,34 @@
+
 function broadcastPayload(obj) {
   for (let id in dataConnections) {
+    if (dataConnections[id].open) {
+      dataConnections[id].send(obj);
+    }
     if (dataConnections[id].open) dataConnections[id].send(obj);
   }
 }
 
 function updateRemotePlayerEntity(peerId, data) {
   if (!activePeers3D[peerId]) {
-    const group = new THREE.Group();
-    const bodyMat = new THREE.MeshStandardMaterial({ color: 0x3d4345, roughness: 0.3, metalness: 0.5 });
+    const rGeo = new THREE.BoxGeometry(2.0, 4.0, 2.0);
+    const rMat = new THREE.MeshBasicMaterial({ color: 0x5a635c });
+    const mesh = new THREE.Mesh(rGeo, rMat);
     
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(2.0, 4.0, 2.0), bodyMat);
-    mesh.castShadow = true; mesh.receiveShadow = true; group.add(mesh);
-    
-    const helmet = new THREE.Mesh(new THREE.BoxGeometry(1.3, 1.3, 1.3), new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.2 }));
-    helmet.position.set(0, 2.3, 0); group.add(helmet);
-    
-    const visor = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.4, 0.4), new THREE.MeshBasicMaterial({ color: 0xff0033 }));
-    visor.position.set(0, 2.4, -0.5); group.add(visor);
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(2.0, 4.0, 2.0), new THREE.MeshBasicMaterial({ color: 0x5a635c }));
+    const helmet = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.2, 1.2), new THREE.MeshBasicMaterial({ color: 0x00ffff }));
+    helmet.position.set(0, 2.3, 0);
+    mesh.add(helmet);
 
-    scene.add(group);
-    activePeers3D[peerId] = { group: group, name: data.name };
-    pushNotification(`Linked: [${data.name}]`);
+    helmet.position.set(0, 2.3, 0); mesh.add(helmet);
+    scene.add(mesh);
+    activePeers3D[peerId] = { mesh: mesh, name: data.name };
+    pushNotification(`Link Locked: [${data.name}] entered.`);
+    pushNotification(`Link Synced: [${data.name}]`);
   }
+
   const pObj = activePeers3D[peerId];
-  pObj.group.position.set(data.x, 2.0, data.z);
-  pObj.group.rotation.y = data.ry;
+  pObj.mesh.position.set(data.x, 2.0, data.z);
+  pObj.mesh.rotation.y = data.ry;
 }
 
 function removeRemotePlayerEntity(peerId) {
   if (activePeers3D[peerId]) {
-    pushNotification(`[${activePeers3D[peerId].name}] array dropped`);
-    scene.remove(activePeers3D[peerId].group);
+    pushNotification(`[${activePeers3D[peerId].name}] broken data link`);
+    pushNotification(`[${activePeers3D[peerId].name}] broken array`);
+    scene.remove(activePeers3D[peerId].mesh);
     delete activePeers3D[peerId];
   }
 }
 
 // ======================================================
-// ================= GRAPHICS ENGINE INITIATION =========
+// ================= CORE ENGINE SETUP ==================
+// ================= ENGINE INITIALIZATION ==============
 // ======================================================
 function initThreeEngine() {
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0xe2e8eb); // High visibility daylight clear ceiling bounds
-
-  camera = new THREE.PerspectiveCamera(NORMAL_FOV, window.innerWidth / (window.innerHeight - 80), 0.1, 400);
-  camera.position.copy(player.pos); scene.add(camera);
-
-  renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.setSize(window.innerWidth / pixelScale, (window.innerHeight - 80) / pixelScale, false);
+@@ -358,13 +322,16 @@
   document.body.appendChild(renderer.domElement);
 
   clock = new THREE.Clock();
-  
-  // High Luminance Ambient Framework Setup
-  const globalAmbient = new THREE.AmbientLight(0xffffff, 0.9);
-  scene.add(globalAmbient);
 
-  mainLight = new THREE.DirectionalLight(0xffffff, 1.3);
-  mainLight.position.set(50, 120, 30);
-  mainLight.castShadow = true;
-  mainLight.shadow.mapSize.width = 2048;
-  mainLight.shadow.mapSize.height = 2048;
-  scene.add(mainLight);
+  const ambientLight = new THREE.AmbientLight(0x888888);
+  scene.add(ambientLight);
+  scene.add(new THREE.AmbientLight(0x888888));
 
-  muzzleFlashLight = new THREE.PointLight(0xff9900, 0, 45);
-  scene.add(muzzleFlashLight);
+  buildGrittyWorld();
+  buildCenteredWeapon();
 
-  buildBrightEnvironment();
-  buildRealisticWeapon();
-
-  window.addEventListener('contextmenu', (e) => e.preventDefault());
-
+  // POINTER LOCK & INPUT ACTION REGISTRATIONS
   renderer.domElement.addEventListener('click', () => {
-    if (!isChatOpen && !isTouchHardware) renderer.domElement.requestPointerLock();
+    if (!isChatOpen) renderer.domElement.requestPointerLock();
   });
 
   window.addEventListener('keydown', handleKeySystemDown);
   window.addEventListener('keyup', handleKeySystemUp);
   document.addEventListener('mousemove', handleGrittyLook);
-  
-  window.addEventListener('mousedown', (e) => { 
-    if(!isTouchHardware) {
-      if (e.button === 0) fireWeaponSystem(); 
-      if (e.button === 2) isAiming = true;     
-    }
-  });
-
-  window.addEventListener('mouseup', (e) => {
-    if(!isTouchHardware && e.button === 2) isAiming = false;
-  });
-
-  if (isTouchHardware) registerTouchSensors();
-
-  isEngineActive = true;
-  mainEngineLoop();
-}
-
-function buildBrightEnvironment() {
-  const wallTexture = generateBrightPBRTextures();
-  const blockGeo = new THREE.BoxGeometry(SCALE, SCALE, SCALE);
-  const pbrWallMat = new THREE.MeshStandardMaterial({ map: wallTexture, roughness: 0.5, metalness: 0.1 });
-
-  for (let r = 0; r < LEVEL_GRID.length; r++) {
-    for (let c = 0; c < LEVEL_GRID[r].length; c++) {
+@@ -384,35 +351,30 @@
       if (LEVEL_GRID[r][c] === 1) {
-        const wallBlock = new THREE.Mesh(blockGeo, pbrWallMat);
+        const wallBlock = new THREE.Mesh(blockGeo, wallMat);
         wallBlock.position.set(c * SCALE, SCALE / 2, r * SCALE);
-        wallBlock.castShadow = true; wallBlock.receiveShadow = true;
+        scene.add(wallBlock);
+        walls.push(wallBlock);
         scene.add(wallBlock); walls.push(wallBlock);
       }
     }
   }
 
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(600, 600), new THREE.MeshStandardMaterial({ color: 0x9fa5a8, roughness: 0.6 }));
-  floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
-
-  const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(600, 600), new THREE.MeshStandardMaterial({ color: 0xc9cfd2, roughness: 0.7 }));
-  ceiling.position.y = SCALE; ceiling.rotation.x = Math.PI / 2; scene.add(ceiling);
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(500, 500), new THREE.MeshLambertMaterial({ color: 0x121411 }));
+  floor.rotation.x = -Math.PI / 2;
+  scene.add(floor);
+  floor.rotation.x = -Math.PI / 2; scene.add(floor);
 }
 
-function buildRealisticWeapon() {
+function buildCenteredWeapon() {
   weaponGroup = new THREE.Group();
-  const baseFrame = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.22, 0.65), new THREE.MeshStandardMaterial({ color: 0x2b3032, roughness: 0.3, metalness: 0.6 }));
-  const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.4), new THREE.MeshStandardMaterial({ color: 0x0f1112, metalness: 0.9 }));
-  barrel.rotation.x = Math.PI / 2; barrel.position.set(0, 0.04, -0.4); baseFrame.add(barrel);
-  
-  baseFrame.position.set(0.18, -0.24, -0.5); 
+  const baseFrame = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.35, 0.6), new THREE.MeshBasicMaterial({ color: 0x444845 }));
+  const barrel = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.06, 0.5), new THREE.MeshBasicMaterial({ color: 0x1f2120 }));
+  barrel.position.set(0, 0.1, -0.4);
+  baseFrame.add(barrel);
+  barrel.position.set(0, 0.1, -0.4); baseFrame.add(barrel);
+
+  muzzleFlashObj = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, 0.2), new THREE.MeshBasicMaterial({ color: 0xffcc00 }));
+  muzzleFlashObj.position.set(0, 0.1, -0.7); muzzleFlashObj.visible = false;
+  baseFrame.add(muzzleFlashObj);
+
+  baseFrame.position.set(0, -0.28, -0.55);
   weaponGroup.add(baseFrame);
+  baseFrame.position.set(0, -0.28, -0.55); weaponGroup.add(baseFrame);
   camera.add(weaponGroup);
 }
 
+// ======================================================
+// ================= RUNTIME LOOP CONTROL ===============
+// ================= RUNTIME CORE FUNCTIONS =============
+// ======================================================
 function handleKeySystemDown(e) {
-  if (e.code === 'Enter') { e.preventDefault(); toggleTextChat(); return; }
-  if (isChatOpen) return;
-  keys[e.code] = true;
-}
-
-function handleKeySystemUp(e) {
-  if (isChatOpen) return;
-  keys[e.code] = false;
+  if (e.code === 'Enter') {
+@@ -443,9 +405,11 @@
 }
 
 function handleGrittyLook(e) {
-  if (document.pointerLockElement !== renderer.domElement || isChatOpen || isTouchHardware) return;
-  let sensitivityFactor = isAiming ? 0.0011 : 0.0022;
-  player.rot.y -= e.movementX * sensitivityFactor;
-  player.rot.x -= e.movementY * sensitivityFactor;
-  player.rot.x = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, player.rot.x));
-}
-
-// ======================================================
-// ================= HIGH VISIBILITY IPAD TOUCH MOTOR ===
-// ======================================================
-function registerTouchSensors() {
-  const joyStick = document.getElementById('mobile-joystick-stick');
-  const fireBtn = document.getElementById('mobile-fire-button');
-  const adsBtn = document.getElementById('mobile-ads-button');
-
-  fireBtn.addEventListener('touchstart', (e) => { e.preventDefault(); fireWeaponSystem(); });
+  if (document.pointerLockElement !== document.body || isChatOpen) return;
+  player.rot.y -= e.movementX * 0.0035;
+  player.rot.x -= e.movementY * 0.0035;
+  // Lock checking restriction directly tied to canvas pointer visibility tracking
+  if (document.pointerLockElement !== renderer.domElement || isChatOpen) return;
   
-  adsBtn.addEventListener('touchstart', (e) => { 
-    e.preventDefault(); 
-    isAiming = !isAiming;
-    adsBtn.style.background = isAiming ? "rgba(0,255,102,0.5)" : "rgba(0,255,102,0.2)";
-  });
-
-  window.addEventListener('touchstart', (e) => {
-    for (let i = 0; i < e.changedTouches.length; i++) {
-      const t = e.changedTouches[i];
-      
-      // Left Half: Movement Handling Segment Matrix
-      if (t.clientX < window.innerWidth / 2) {
-        if (touchMoveId === null) {
-          touchMoveId = t.identifier;
-          joyStart.set(t.clientX, t.clientY);
-        }
-      } 
-      // Right Half: Looking Angle Modifier Array Segment
-      else {
-        if (t.target !== fireBtn && t.target !== adsBtn && touchLookId === null) {
-          touchLookId = t.identifier;
-          lookLastPos.set(t.clientX, t.clientY);
-        }
-      }
-    }
-  }, { passive: false });
-
-  window.addEventListener('touchmove', (e) => {
-    for (let i = 0; i < e.changedTouches.length; i++) {
-      const t = e.changedTouches[i];
-      if (t.identifier === touchMoveId) {
-        joyMove.set(t.clientX, t.clientY);
-        let dist = joyStart.distanceTo(joyMove);
-        let dir = new THREE.Vector2().subVectors(joyMove, joyStart).normalize();
-        let maxDist = 50;
-        if (dist > maxDist) dist = maxDist;
-        
-        joyStick.style.transform = `translate(${dir.x * dist}px, ${dir.y * dist}px)`;
-        mobileMoveVector.copy(dir).multiplyScalar(dist / maxDist);
-      }
-      if (t.identifier === touchLookId) {
-        let dx = t.clientX - lookLastPos.x;
-        let dy = t.clientY - lookLastPos.y;
-        
-        // Scale down viewport rotational rate dynamically while aiming down sights on iPad
-        let sensitivityFactor = isAiming ? 0.002 : 0.0045;
-        
-        player.rot.y -= dx * sensitivityFactor;
-        player.rot.x -= dy * (sensitivityFactor * 0.9);
-        player.rot.x = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, player.rot.x));
-        lookLastPos.set(t.clientX, t.clientY);
-      }
-    }
-  }, { passive: false });
-
-  window.addEventListener('touchend', (e) => {
-    for (let i = 0; i < e.changedTouches.length; i++) {
-      const t = e.changedTouches[i];
-      if (t.identifier === touchMoveId) {
-        touchMoveId = null;
-        joyStick.style.transform = `translate(0px, 0px)`;
-        mobileMoveVector.set(0, 0);
-      }
-      if (t.identifier === touchLookId) touchLookId = null;
-    }
-  });
+  player.rot.y -= e.movementX * 0.0030;
+  player.rot.x -= e.movementY * 0.0030;
+  player.rot.x = Math.max(-Math.PI / 2.5, Math.min(Math.PI / 2.5, player.rot.x));
 }
 
+@@ -454,7 +418,7 @@
+  if(isActive) {
+    node.style.background = '#441111'; node.style.borderColor = '#ff3333';
+    document.getElementById('voice-label').style.color = '#ff3333';
+    document.getElementById('voice-status').innerText = `${senderName.toUpperCase()} XMIT`;
+    document.getElementById('voice-status').innerText = `${senderName.toUpperCase()} TALK`;
+    document.getElementById('voice-status').style.color = '#ff3333';
+  } else {
+    node.style.background = '#1f1f1e'; node.style.borderColor = '#444';
+@@ -467,7 +431,8 @@
 function toggleTextChat() {
   const input = document.getElementById('chat-input');
   if (!isChatOpen) {
-    isChatOpen = true; keys = {}; input.style.display = 'block'; input.focus();
-    if(!isTouchHardware) document.exitPointerLock();
+    isChatOpen = true; input.style.display = 'block'; input.focus();
+    isChatOpen = true; keys = {}; // Clear keys array to drop drifting movement while typing
+    input.style.display = 'block'; input.focus();
+    document.exitPointerLock();
   } else {
     isChatOpen = false;
-    if (input.value.trim() !== "") {
-      pushChatMessage(player.name, input.value, '#00ff66');
+@@ -476,7 +441,7 @@
       broadcastPayload({ type: 'chat', sender: player.name, text: input.value });
     }
     input.value = ""; input.style.display = 'none';
-    if(!isTouchHardware) renderer.domElement.requestPointerLock();
+    document.body.requestPointerLock();
+    renderer.domElement.requestPointerLock();
   }
 }
 
-function pushChatMessage(sender, text, colorHex) {
-  const log = document.getElementById('chat-log');
-  const msg = document.createElement('div');
-  msg.innerHTML = `<span style="color: ${colorHex || '#ffaa00'}">[${sender}]:</span> ${text}`;
-  log.appendChild(msg);
+@@ -488,9 +453,8 @@
   if (log.children.length > 6) log.removeChild(log.children[0]);
 }
 
+// 0.980-Second Bolt Lock Mechanism Pipeline
 function fireWeaponSystem() {
-  if (!isTouchHardware && document.pointerLockElement !== renderer.domElement) return;
-  if (isChatOpen) return;
-  
+  if (document.pointerLockElement !== document.body || player.health <= 0 || isChatOpen) return;
+  if (document.pointerLockElement !== renderer.domElement || isChatOpen) return;
+
   if (!canShoot) {
     const alertEl = document.getElementById('cooldown-alert');
-    alertEl.style.display = 'block'; setTimeout(() => { alertEl.style.display = 'none'; }, 200);
-    return;
+@@ -500,11 +464,11 @@
   }
 
   canShoot = false;
-  weaponGroup.children[0].position.z += 0.14; 
-  
-  muzzleFlashLight.position.copy(player.pos).add(new THREE.Vector3(0,0.1,-0.5).applyQuaternion(camera.quaternion));
-  muzzleFlashLight.intensity = 16.0;
+  weaponGroup.children[0].position.z += 0.22; // Physical mechanical slide recoil snap
+  weaponGroup.children[0].position.z += 0.22;
+  muzzleFlashObj.visible = true;
 
-  setTimeout(() => { muzzleFlashLight.intensity = 0; }, 60);
+  setTimeout(() => { muzzleFlashObj.visible = false; }, 120);
+  setTimeout(() => { canShoot = true; }, FIRE_DELAY); // Rate lock strictly locked to 980ms
   setTimeout(() => { canShoot = true; }, FIRE_DELAY);
 
   const raycaster = new THREE.Raycaster();
   raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
-
-  let activeTargets = []; let peerIdMaps = [];
-  for(let id in activePeers3D) { activeTargets.push(activePeers3D[id].group.children[0]); peerIdMaps.push(id); }
-
-  const hits = raycaster.intersectObjects(activeTargets);
-  if (hits.length > 0) {
-    const peerId = peerIdMaps[activeTargets.indexOf(hits[0].object)];
-    spawnAAAFluidSparks(hits[0].point, 0xff0022, 24);
-    broadcastPayload({ type: 'frag', killer: player.name, victim: activePeers3D[peerId].name });
-    killCount++; document.getElementById('score-display').innerText = String(killCount).padStart(2, '0');
-  } else {
-    const wallHits = raycaster.intersectObjects(walls);
-    if (wallHits.length > 0) spawnAAAFluidSparks(wallHits[0].point, 0xff4400, 8);
-  }
-}
-
-function spawnAAAFluidSparks(pos, colorHex, count) {
-  const cGeo = new THREE.BoxGeometry(0.12, 0.12, 0.12);
-  const cMat = new THREE.MeshBasicMaterial({ color: colorHex });
-  for (let i = 0; i < count; i++) {
-    const chunk = new THREE.Mesh(cGeo, cMat); chunk.position.copy(pos); scene.add(chunk);
-    activeSparks.push({
-      mesh: chunk,
-      vel: new THREE.Vector3((Math.random() - 0.5) * 0.6, (Math.random() - 0.1) * 0.5, (Math.random() - 0.5) * 0.6),
-      life: 20
-    });
-  }
-}
-
-function pushNotification(text) {
-  const feed = document.getElementById('kill-feed');
-  const log = document.createElement('div'); log.innerText = text; feed.appendChild(log);
-  if (feed.children.length > 5) feed.removeChild(feed.children[0]);
-  setTimeout(() => { if (log.parentNode) feed.removeChild(log); }, 5000);
-}
-
-function mainEngineLoop() {
-  if (!isEngineActive) return;
-  requestAnimationFrame(mainEngineLoop);
-
+@@ -556,7 +520,7 @@
   const delta = clock.getDelta();
   const time = clock.getElapsedTime();
 
+  if (player.health > 0 && !isChatOpen) {
   if (!isChatOpen) {
     camera.rotation.set(0, 0, 0);
     camera.rotation.y = player.rot.y;
     camera.rotation.x = player.rot.x;
-
-    let targetFOV = isAiming ? ADS_FOV : NORMAL_FOV;
-    if (Math.abs(camera.fov - targetFOV) > 0.1) {
-      camera.fov = THREE.MathUtils.lerp(camera.fov, targetFOV, 0.22);
-      camera.updateProjectionMatrix();
-    }
-
-    const moveVector = new THREE.Vector3();
-    
-    if (keys['KeyW']) moveVector.z -= 1;
-    if (keys['KeyS']) moveVector.z += 1;
-    if (keys['KeyA']) moveVector.x -= 1;
-    if (keys['KeyD']) moveVector.x += 1;
-
-    if (isTouchHardware && mobileMoveVector.lengthSq() > 0) {
-      moveVector.x = mobileMoveVector.x;
-      moveVector.z = mobileMoveVector.y;
-    }
-
-    moveVector.applyAxisAngle(new THREE.Vector3(0, 1, 0), player.rot.y);
-    if (!isTouchHardware) moveVector.normalize();
-    
-    let speedModifier = isAiming ? 0.55 : 1.0;
-    moveVector.multiplyScalar(player.speed * speedModifier);
-
-    const checkX = player.pos.x + moveVector.x;
-    const checkZ = player.pos.z + moveVector.z;
-    const cellX = Math.floor((checkX + SCALE / 2) / SCALE);
-    const cellZ = Math.floor((checkZ + SCALE / 2) / SCALE);
-
-    if (LEVEL_GRID[cellZ] && LEVEL_GRID[cellZ][cellX] !== 1) {
+@@ -579,7 +543,6 @@
       player.pos.x = checkX; player.pos.z = checkZ;
     }
 
-    let targetX = 0.18;
-    let targetY = -0.24;
-    
-    if (isAiming) {
-      targetX = 0.0;     
-      targetY = -0.16;   
-    } else if (moveVector.lengthSq() > 0.001) {
-      targetY += Math.sin(time * 10) * 0.015;
-      targetX += Math.cos(time * 5) * 0.01;
-    }
-    
-    weaponGroup.children[0].position.x = THREE.MathUtils.lerp(weaponGroup.children[0].position.x, targetX, 0.22);
-    weaponGroup.children[0].position.y = THREE.MathUtils.lerp(weaponGroup.children[0].position.y, targetY, 0.22);
-    weaponGroup.children[0].position.z = THREE.MathUtils.lerp(weaponGroup.children[0].position.z, -0.5, 0.1);
-
-    camera.position.copy(player.pos);
-  }
-
-  for (let i = activeSparks.length - 1; i >= 0; i--) {
-    const s = activeSparks[i]; s.mesh.position.add(s.vel); s.life--;
-    if (s.life <= 0) { scene.remove(s.mesh); activeSparks.splice(i, 1); }
-  }
-
-  renderer.render(scene, camera);
-}
-
-window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / (window.innerHeight - 80); camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth / pixelScale, (window.innerHeight - 80) / pixelScale, false);
-});
-</script>
-</body>
-</html>
+    // Gun sway linear interpolation transitions
+    let bobY = -0.28; let bobX = 0;
+    if (keys['KeyW'] || keys['KeyS'] || keys['KeyA'] || keys['KeyD']) {
+      bobY += Math.abs(Math.sin(time * 12)) * 0.04 - 0.02;
