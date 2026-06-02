@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>SLUDGECORE // URBAN TACTICAL ARCHITECTURE</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SLUDGECORE // DESKTOP TACTICAL ARCHITECTURE</title>
   <style>
-    body, html { margin: 0; padding: 0; overflow: hidden; width: 100%; height: 100%; background: #0b0c0e; font-family: 'Impact', sans-serif; user-select: none; touch-action: none; }
+    body, html { margin: 0; padding: 0; overflow: hidden; width: 100%; height: 100%; background: #0b0c0e; font-family: 'Impact', sans-serif; user-select: none; }
     canvas { width: 100vw !important; height: calc(100vh - 80px) !important; display: block; }
 
     #terminal-lobby {
@@ -37,11 +37,6 @@
 
     #crosshair { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; z-index: 20; }
     .ch-dot { width: 4px; height: 4px; background: rgba(239,68,68,0.85); border-radius: 50%; }
-
-    #mobile-joystick-container { position: absolute; bottom: 120px; left: 40px; width: 110px; height: 110px; background: rgba(0,0,0,0.4); border: 2px solid rgba(255,255,255,0.1); border-radius: 50%; z-index: 50; display: none; align-items: center; justify-content: center; }
-    #mobile-joystick-stick { width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 50%; }
-    #mobile-fire-button { position: absolute; bottom: 120px; right: 40px; width: 85px; height: 85px; background: rgba(239,68,68,0.25); border: 2px solid #ef4444; border-radius: 50%; z-index: 51; display: none; align-items: center; justify-content: center; color: #fff; font-weight: bold; font-size: 15px; }
-    #mobile-ads-button { position: absolute; bottom: 225px; right: 50px; width: 60px; height: 60px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; z-index: 51; display: none; align-items: center; justify-content: center; color: #fff; font-size: 12px; }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/peerjs@1.4.7/dist/peerjs.min.js"></script>
@@ -49,8 +44,8 @@
 <body>
 
   <div id="terminal-lobby">
-    <div class="terminal-title">SLUDGECORE BUILD v0.2.1</div>
-    <div id="hardware-diagnostic-tag" style="color: #64748b; margin-bottom: 25px; font-size: 11px; tracking: 1px;">CHECKING PERSISTENT PACKET CHANNELS...</div>
+    <div class="terminal-title">SLUDGECORE BUILD v0.2.2</div>
+    <div style="color: #64748b; margin-bottom: 25px; font-size: 11px; tracking: 1px;">SYSTEM ARCH: DESKTOP MOUSE POINTER CAPTURE</div>
     
     <div class="setup-box">
       <input type="text" id="room-field" class="input-field" value="TACTICAL_MAZE_ZONE">
@@ -61,10 +56,6 @@
 
   <div id="crosshair"><div class="ch-dot"></div></div>
   <div id="kill-feed"></div>
-
-  <div id="mobile-joystick-container"><div id="mobile-joystick-stick"></div></div>
-  <div id="mobile-fire-button">FIRE</div>
-  <div id="mobile-ads-button">ADS</div>
 
   <div id="chat-box">
     <div id="chat-log"></div>
@@ -115,24 +106,6 @@ let killCount = 0;
 
 let roomClusterId = '', myPeerId = '', peer = null;
 let dataConnections = {}, activePeers3D = {};   
-
-let isTouchArchitecture = false;
-let touchMoveId = null, touchLookId = null;
-let joyStart = new THREE.Vector2(), joyMove = new THREE.Vector2(), mobileMoveVector = new THREE.Vector2(), lookLastPos = new THREE.Vector2();
-
-function evaluatePlatform() {
-  if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
-    isTouchArchitecture = true;
-    document.getElementById('hardware-diagnostic-tag').innerText = "SYSTEM ARCH: MOBILE DISPLAY INTERFACE LOADED";
-    document.getElementById('mobile-joystick-container').style.display = 'flex';
-    document.getElementById('mobile-fire-button').style.display = 'flex';
-    document.getElementById('mobile-ads-button').style.display = 'flex';
-  } else {
-    isTouchArchitecture = false;
-    document.getElementById('hardware-diagnostic-tag').innerText = "SYSTEM ARCH: DESKTOP MOUSE POINTER CAPTURE";
-  }
-}
-evaluatePlatform();
 
 async function initializeLiveNetwork() {
   player.name = document.getElementById('username-field').value.trim() || 'Operator';
@@ -261,8 +234,8 @@ function initThreeEngine() {
   keyLight = new THREE.DirectionalLight(0x38bdf8, 1.0); 
   keyLight.position.set(40, 120, 20);
   keyLight.castShadow = true;
-  keyLight.shadow.mapSize.width = isTouchArchitecture ? 1048 : 2048;
-  keyLight.shadow.mapSize.height = isTouchArchitecture ? 1048 : 2048;
+  keyLight.shadow.mapSize.width = 2048;
+  keyLight.shadow.mapSize.height = 2048;
   keyLight.shadow.bias = -0.0002;
   scene.add(keyLight);
 
@@ -278,7 +251,7 @@ function initThreeEngine() {
   });
 
   renderer.domElement.addEventListener('click', () => {
-    if (!isChatOpen && !isTouchArchitecture) renderer.domElement.requestPointerLock();
+    if (!isChatOpen) renderer.domElement.requestPointerLock();
   });
 
   window.addEventListener('keydown', (e) => {
@@ -289,7 +262,7 @@ function initThreeEngine() {
   window.addEventListener('keyup', (e) => { if (!isChatOpen) keys[e.code] = false; });
   
   document.addEventListener('mousemove', (e) => {
-    if (document.pointerLockElement !== renderer.domElement || isChatOpen || isTouchArchitecture) return;
+    if (document.pointerLockElement !== renderer.domElement || isChatOpen) return;
     let sens = isAiming ? 0.0012 : 0.0022;
     player.rot.y -= e.movementX * sens;
     player.rot.x -= e.movementY * sens;
@@ -299,14 +272,13 @@ function initThreeEngine() {
   });
   
   window.addEventListener('mousedown', (e) => { 
-    if (!isTouchArchitecture) {
-      if (e.button === 0) fireWeaponSystem(); 
-      if (e.button === 2) isAiming = true;     
-    }
+    if (e.button === 0) fireWeaponSystem(); 
+    if (e.button === 2) isAiming = true;     
   });
-  window.addEventListener('mouseup', (e) => { if (!isTouchArchitecture && e.button === 2) isAiming = false; });
+  window.addEventListener('mouseup', (e) => { if (e.button === 2) isAiming = false; });
 
-  if (isTouchArchitecture) initTouchInterfaceLoops();
+  // Prevent right click menu in game
+  window.addEventListener('contextmenu', e => e.preventDefault());
 
   isEngineActive = true;
   mainEngineLoop();
@@ -356,8 +328,7 @@ function buildPumpShotgun() {
 }
 
 function fireWeaponSystem() {
-  if (!isTouchArchitecture && document.pointerLockElement !== renderer.domElement) return;
-  if (isChatOpen || !canShoot) return;
+  if (document.pointerLockElement !== renderer.domElement || isChatOpen || !canShoot) return;
 
   canShoot = false;
   recoilIntensity += 0.4; 
@@ -400,63 +371,11 @@ function generateImpactFX(pos, colorHex, count) {
   }
 }
 
-function initTouchInterfaceLoops() {
-  const stick = document.getElementById('mobile-joystick-stick');
-  const fire = document.getElementById('mobile-fire-button');
-  const ads = document.getElementById('mobile-ads-button');
-
-  fire.addEventListener('touchstart', (e) => { e.preventDefault(); fireWeaponSystem(); });
-  ads.addEventListener('touchstart', (e) => { 
-    e.preventDefault(); isAiming = !isAiming;
-    ads.style.background = isAiming ? "rgba(239,68,68,0.5)" : "rgba(0,0,0,0.4)";
-  });
-
-  window.addEventListener('touchstart', (e) => {
-    for (let i = 0; i < e.changedTouches.length; i++) {
-      const t = e.changedTouches[i];
-      if (t.clientX < window.innerWidth / 2) {
-        if (touchMoveId === null) { touchMoveId = t.identifier; joyStart.set(t.clientX, t.clientY); }
-      } else {
-        if (t.target !== fire && t.target !== ads && touchLookId === null) { touchLookId = t.identifier; lookLastPos.set(t.clientX, t.clientY); }
-      }
-    }
-  });
-
-  window.addEventListener('touchmove', (e) => {
-    for (let i = 0; i < e.changedTouches.length; i++) {
-      const t = e.changedTouches[i];
-      if (t.identifier === touchMoveId) {
-        joyMove.set(t.clientX, t.clientY);
-        let dist = joyStart.distanceTo(joyMove);
-        let dir = new THREE.Vector2().subVectors(joyMove, joyStart).normalize();
-        let limit = 45; if (dist > limit) dist = limit;
-        stick.style.transform = `translate(${dir.x * dist}px, ${dir.y * dist}px)`;
-        mobileMoveVector.copy(dir).multiplyScalar(dist / limit);
-      }
-      if (t.identifier === touchLookId) {
-        let sens = isAiming ? 0.002 : 0.004;
-        player.rot.y -= (t.clientX - lookLastPos.x) * sens;
-        player.rot.x -= (t.clientY - lookLastPos.y) * (sens * 0.85);
-        player.rot.x = Math.max(-Math.PI / 2.3, Math.min(Math.PI / 2.3, player.rot.x));
-        lookLastPos.set(t.clientX, t.clientY);
-      }
-    }
-  });
-
-  window.addEventListener('touchend', (e) => {
-    for (let i = 0; i < e.changedTouches.length; i++) {
-      const t = e.changedTouches[i];
-      if (t.identifier === touchMoveId) { touchMoveId = null; stick.style.transform = `translate(0px,0px)`; mobileMoveVector.set(0,0); }
-      if (t.identifier === touchLookId) touchLookId = null;
-    }
-  });
-}
-
 function toggleTextChat() {
   const input = document.getElementById('chat-input');
   if (!isChatOpen) {
     isChatOpen = true; keys = {}; input.style.display = 'block'; input.focus();
-    if(!isTouchArchitecture) document.exitPointerLock();
+    document.exitPointerLock();
   } else {
     isChatOpen = false;
     if (input.value.trim() !== "") {
@@ -464,7 +383,7 @@ function toggleTextChat() {
       broadcastPayload({ type: 'chat', sender: player.name, text: input.value });
     }
     input.value = ""; input.style.display = 'none';
-    if(!isTouchArchitecture) renderer.domElement.requestPointerLock();
+    renderer.domElement.requestPointerLock();
   }
 }
 
@@ -504,12 +423,8 @@ function mainEngineLoop() {
     if (keys['KeyA']) moveVector.x -= 1;
     if (keys['KeyD']) moveVector.x += 1;
 
-    if (isTouchArchitecture && mobileMoveVector.lengthSq() > 0) {
-      moveVector.x = mobileMoveVector.x; moveVector.z = mobileMoveVector.y;
-    }
-
     moveVector.applyAxisAngle(new THREE.Vector3(0, 1, 0), player.rot.y);
-    if (!isTouchArchitecture) moveVector.normalize();
+    moveVector.normalize();
     
     let speedMod = isAiming ? 0.45 : 1.0;
     moveVector.multiplyScalar(player.speed * speedMod);
