@@ -3,45 +3,45 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>SLUDGECORE // GAULEY RURAL EXCLUSION ZONE</title>
+  <title>SLUDGECORE // URBAN TACTICAL ARCHITECTURE</title>
   <style>
-    body, html { margin: 0; padding: 0; overflow: hidden; width: 100%; height: 100%; background: #121415; font-family: 'Impact', sans-serif; user-select: none; touch-action: none; }
+    body, html { margin: 0; padding: 0; overflow: hidden; width: 100%; height: 100%; background: #0b0c0e; font-family: 'Impact', sans-serif; user-select: none; touch-action: none; }
     canvas { width: 100vw !important; height: calc(100vh - 80px) !important; display: block; }
 
     #terminal-lobby {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: linear-gradient(180deg, #1a1c1e 0%, #0d0e10 100%); display: flex; flex-direction: column;
-      align-items: center; justify-content: center; z-index: 60; color: #d1d5db; font-family: monospace;
+      background: linear-gradient(180deg, #11141a 0%, #050608 100%); display: flex; flex-direction: column;
+      align-items: center; justify-content: center; z-index: 60; color: #94a3b8; font-family: monospace;
     }
-    .terminal-title { font-size: 36px; color: #bc6c25; font-family: 'Impact'; text-shadow: 2px 2px #2b1d10; letter-spacing: 2px; }
+    .terminal-title { font-size: 40px; color: #ef4444; font-family: 'Impact'; text-shadow: 2px 2px #000; letter-spacing: 2px; }
     
-    .setup-box { background: rgba(28, 30, 33, 0.98); border: 1px solid #4a3728; padding: 30px; width: 85%; max-width: 460px; text-align: center; box-shadow: 0 15px 50px rgba(0,0,0,0.9); }
-    .input-field { background: #0b0c0d; border: 1px solid #57534e; color: #f5f5f4; padding: 12px; font-family: monospace; font-size: 15px; width: 85%; margin-bottom: 20px; text-align: center; outline: none; }
-    .input-field:focus { border-color: #bc6c25; }
-    .btn-connect { background: #bc6c25; color: #fff; border: none; padding: 14px 24px; font-weight: bold; cursor: pointer; font-family: monospace; font-size: 15px; text-transform: uppercase; width: 90%; transition: 0.2s; }
-    .btn-connect:hover { background: #dda15e; }
+    .setup-box { background: rgba(15, 23, 42, 0.98); border: 1px solid #334155; padding: 30px; width: 85%; max-width: 460px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
+    .input-field { background: #020617; border: 1px solid #475569; color: #f8fafc; padding: 12px; font-family: monospace; font-size: 15px; width: 85%; margin-bottom: 20px; text-align: center; outline: none; }
+    .input-field:focus { border-color: #ef4444; }
+    .btn-connect { background: #ef4444; color: #fff; border: none; padding: 14px 24px; font-weight: bold; cursor: pointer; font-family: monospace; font-size: 15px; text-transform: uppercase; width: 90%; transition: 0.2s; }
+    .btn-connect:hover { background: #f87171; }
 
-    #kill-feed { position: absolute; top: 20px; right: 20px; width: 280px; font-family: monospace; font-size: 12px; color: #dda15e; text-align: right; pointer-events: none; z-index: 30; display: flex; flex-direction: column; gap: 4px; text-shadow: 1px 1px 2px #000; }
+    #kill-feed { position: absolute; top: 20px; right: 20px; width: 280px; font-family: monospace; font-size: 12px; color: #f87171; text-align: right; pointer-events: none; z-index: 30; display: flex; flex-direction: column; gap: 4px; text-shadow: 1px 1px 2px #000; }
     #chat-box { position: absolute; bottom: 110px; left: 20px; width: 340px; height: 140px; pointer-events: none; z-index: 35; display: flex; flex-direction: column; justify-content: flex-end; font-family: monospace; font-size: 13px; }
-    #chat-log { overflow: hidden; display: flex; flex-direction: column; gap: 4px; color: #e7e5e4; background: rgba(15,17,19,0.85); padding: 8px; border-left: 3px solid #bc6c25; }
-    #chat-input { background: #090a0b; border: 1px solid #bc6c25; color: #dda15e; padding: 8px; font-family: monospace; font-size: 13px; outline: none; margin-top: 5px; pointer-events: auto; display: none; width: 100%; box-sizing: border-box; }
+    #chat-log { overflow: hidden; display: flex; flex-direction: column; gap: 4px; color: #cbd5e1; background: rgba(15,23,42,0.9); padding: 8px; border-left: 3px solid #ef4444; }
+    #chat-input { background: #0f172a; border: 1px solid #ef4444; color: #f87171; padding: 8px; font-family: monospace; font-size: 13px; outline: none; margin-top: 5px; pointer-events: auto; display: none; width: 100%; box-sizing: border-box; }
 
     #status-bar {
       position: absolute; bottom: 0; left: 0; width: 100%; height: 80px;
-      background: #1c1917; border-top: 4px solid #2e2a24;
+      background: #0f172a; border-top: 4px solid #1e293b;
       display: none; grid-template-columns: repeat(4, 1fr); align-items: center; text-align: center; z-index: 40;
     }
-    .status-node { border-right: 1px solid #2e2a24; height: 100%; display: flex; flex-direction: column; justify-content: center; }
-    .status-val { font-size: 30px; color: #f5f5f4; font-weight: bold; font-family: 'Impact', sans-serif; }
-    .status-title { font-size: 10px; color: #78716c; font-family: monospace; text-transform: uppercase; margin-bottom: 2px; }
+    .status-node { border-right: 1px solid #1e293b; height: 100%; display: flex; flex-direction: column; justify-content: center; }
+    .status-val { font-size: 30px; color: #f8fafc; font-weight: bold; font-family: 'Impact', sans-serif; }
+    .status-title { font-size: 10px; color: #64748b; font-family: monospace; text-transform: uppercase; margin-bottom: 2px; }
 
     #crosshair { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; z-index: 20; }
-    .ch-dot { width: 4px; height: 4px; background: rgba(255,255,255,0.6); border-radius: 50%; }
+    .ch-dot { width: 4px; height: 4px; background: rgba(239,68,68,0.85); border-radius: 50%; }
 
-    #mobile-joystick-container { position: absolute; bottom: 120px; left: 40px; width: 110px; height: 110px; background: rgba(0,0,0,0.2); border: 2px solid rgba(255,255,255,0.1); border-radius: 50%; z-index: 50; display: none; align-items: center; justify-content: center; }
-    #mobile-joystick-stick { width: 40px; height: 40px; background: rgba(255,255,255,0.15); border-radius: 50%; }
-    #mobile-fire-button { position: absolute; bottom: 120px; right: 40px; width: 85px; height: 85px; background: rgba(188,108,37,0.3); border: 2px solid #bc6c25; border-radius: 50%; z-index: 51; display: none; align-items: center; justify-content: center; color: #fff; font-weight: bold; font-size: 15px; }
-    #mobile-ads-button { position: absolute; bottom: 225px; right: 50px; width: 60px; height: 60px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; z-index: 51; display: none; align-items: center; justify-content: center; color: #fff; font-size: 12px; }
+    #mobile-joystick-container { position: absolute; bottom: 120px; left: 40px; width: 110px; height: 110px; background: rgba(0,0,0,0.4); border: 2px solid rgba(255,255,255,0.1); border-radius: 50%; z-index: 50; display: none; align-items: center; justify-content: center; }
+    #mobile-joystick-stick { width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 50%; }
+    #mobile-fire-button { position: absolute; bottom: 120px; right: 40px; width: 85px; height: 85px; background: rgba(239,68,68,0.25); border: 2px solid #ef4444; border-radius: 50%; z-index: 51; display: none; align-items: center; justify-content: center; color: #fff; font-weight: bold; font-size: 15px; }
+    #mobile-ads-button { position: absolute; bottom: 225px; right: 50px; width: 60px; height: 60px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; z-index: 51; display: none; align-items: center; justify-content: center; color: #fff; font-size: 12px; }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/peerjs@1.4.7/dist/peerjs.min.js"></script>
@@ -49,13 +49,13 @@
 <body>
 
   <div id="terminal-lobby">
-    <div class="terminal-title">GAULEY ACTIVE ZONE</div>
-    <div id="hardware-diagnostic-tag" style="color: #78716c; margin-bottom: 25px; font-size: 11px; tracking: 1px;">PROBING SYSTEM ENVIRONMENT STATUS...</div>
+    <div class="terminal-title">SLUDGECORE BUILD v0.2.1</div>
+    <div id="hardware-diagnostic-tag" style="color: #64748b; margin-bottom: 25px; font-size: 11px; tracking: 1px;">CHECKING PERSISTENT PACKET CHANNELS...</div>
     
     <div class="setup-box">
-      <input type="text" id="room-field" class="input-field" value="KATHMANDU_SECTOR">
-      <input type="text" id="username-field" class="input-field" value="Gauley_Driver" maxlength="14">
-      <button class="btn-connect" onclick="initializeLiveNetwork()">ENTER MAP</button>
+      <input type="text" id="room-field" class="input-field" value="TACTICAL_MAZE_ZONE">
+      <input type="text" id="username-field" class="input-field" value="Operator_Node" maxlength="14">
+      <button class="btn-connect" onclick="initializeLiveNetwork()">DEPLOY ENGINE</button>
     </div>
   </div>
 
@@ -63,19 +63,19 @@
   <div id="kill-feed"></div>
 
   <div id="mobile-joystick-container"><div id="mobile-joystick-stick"></div></div>
-  <div id="mobile-fire-button">SHOOT</div>
-  <div id="mobile-ads-button">AIM</div>
+  <div id="mobile-fire-button">FIRE</div>
+  <div id="mobile-ads-button">ADS</div>
 
   <div id="chat-box">
     <div id="chat-log"></div>
-    <input type="text" id="chat-input" placeholder="SAY SOMETHING..." maxlength="50">
+    <input type="text" id="chat-input" placeholder="TALK TO HOST..." maxlength="50">
   </div>
 
   <div id="status-bar">
-    <div class="status-node"><span class="status-title">EQUIPPED ARMS</span><span class="status-val" style="font-size: 18px; color: #bc6c25;">VINTAGE 12-GAUGE</span></div>
-    <div class="status-node"><span class="status-title">VITAL SIGNS</span><span id="hp-display" class="status-val" style="color: #a3e635;">100</span></div>
-    <div class="status-node"><span class="status-title">FRAGS</span><span id="score-display" class="status-val">0</span></div>
-    <div class="status-node" style="border-right: none;"><span class="status-title">LOCAL USERS</span><span id="peer-count-display" class="status-val" style="color: #60a5fa;">0</span></div>
+    <div class="status-node"><span class="status-title">TACTICAL ARMS</span><span class="status-val" style="font-size: 18px; color: #ef4444;">PUMP ACTION 12G</span></div>
+    <div class="status-node"><span class="status-title">CONDITION</span><span id="hp-display" class="status-val" style="color: #10b981;">100</span></div>
+    <div class="status-node"><span class="status-title">CONFIRMED</span><span id="score-display" class="status-val">0</span></div>
+    <div class="status-node" style="border-right: none;"><span class="status-title">ACTIVE NODES</span><span id="peer-count-display" class="status-val" style="color: #3b82f6;">0</span></div>
   </div>
 
 <script>
@@ -100,14 +100,14 @@ let keys = {};
 let isEngineActive = false, isChatOpen = false;
 
 let canShoot = true;
-const FIRE_DELAY = 950; 
-let weaponGroup, sunLight, fillLight, flashLight;
+const FIRE_DELAY = 850; 
+let weaponGroup, ambientLight, keyLight, flashLight;
 let recoilIntensity = 0, targetCameraTilt = 0, cameraSway = 0;
 
 let isAiming = false;
 let currentAdsWeight = 0;
-const NORMAL_FOV = 62;
-const ADS_FOV = 44;
+const NORMAL_FOV = 65;
+const ADS_FOV = 45;
 
 const walls = [];
 const activeSparks = [];
@@ -123,20 +123,20 @@ let joyStart = new THREE.Vector2(), joyMove = new THREE.Vector2(), mobileMoveVec
 function evaluatePlatform() {
   if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
     isTouchArchitecture = true;
-    document.getElementById('hardware-diagnostic-tag').innerText = "MOBILE DETECTED // TOUCH INTERFACE LOADED";
+    document.getElementById('hardware-diagnostic-tag').innerText = "SYSTEM ARCH: MOBILE DISPLAY INTERFACE LOADED";
     document.getElementById('mobile-joystick-container').style.display = 'flex';
     document.getElementById('mobile-fire-button').style.display = 'flex';
     document.getElementById('mobile-ads-button').style.display = 'flex';
   } else {
     isTouchArchitecture = false;
-    document.getElementById('hardware-diagnostic-tag').innerText = "DESKTOP SIGNATURE // RAW MOUSE ENGINE ARMED";
+    document.getElementById('hardware-diagnostic-tag').innerText = "SYSTEM ARCH: DESKTOP MOUSE POINTER CAPTURE";
   }
 }
 evaluatePlatform();
 
 async function initializeLiveNetwork() {
-  player.name = document.getElementById('username-field').value.trim() || 'Driver';
-  roomClusterId = document.getElementById('room-field').value.trim() || 'KATHMANDU_SECTOR';
+  player.name = document.getElementById('username-field').value.trim() || 'Operator';
+  roomClusterId = document.getElementById('room-field').value.trim() || 'TACTICAL_MAZE_ZONE';
   
   document.getElementById('terminal-lobby').style.display = 'none';
   document.getElementById('status-bar').style.display = 'grid';
@@ -145,7 +145,7 @@ async function initializeLiveNetwork() {
   peer = new Peer(myPeerId);
 
   peer.on('open', () => {
-    pushNotification(`Joined sector as [${player.name}]`);
+    pushNotification(`Node verified as [${player.name}]`);
     localStorage.setItem('sludgecore_ping_' + roomClusterId, myPeerId + ':' + Date.now());
     hookDiscoverySignaling();
   });
@@ -180,7 +180,7 @@ function setupDataConnectionListeners(conn) {
   conn.on('data', (data) => {
     if(data.type === 'transform') updateRemotePlayerEntity(conn.peer, data);
     if(data.type === 'chat') pushChatMessage(data.sender, data.text);
-    if(data.type === 'frag') pushNotification(`[${data.killer}] neutralized [${data.victim}]`);
+    if(data.type === 'frag') pushNotification(`[${data.killer}] dropped [${data.victim}]`);
   });
   conn.on('close', () => { removeRemotePlayerEntity(conn.peer); delete dataConnections[conn.peer]; });
 }
@@ -194,14 +194,14 @@ function broadcastPayload(obj) {
 function updateRemotePlayerEntity(peerId, data) {
   if (!activePeers3D[peerId]) {
     const group = new THREE.Group();
-    const clothesMat = new THREE.MeshStandardMaterial({ color: 0x3e3a36, roughness: 0.85 });
-    const skinMat = new THREE.MeshStandardMaterial({ color: 0xc69c6d, roughness: 0.6 });
+    const bodyMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.7 });
+    const headMat = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.5 });
     
-    const body = new THREE.Mesh(new THREE.BoxGeometry(1.6, 4.0, 1.3), clothesMat);
+    const body = new THREE.Mesh(new THREE.BoxGeometry(1.5, 4.0, 1.4), bodyMat);
     body.castShadow = true; body.receiveShadow = true; group.add(body);
     
-    const head = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.9, 0.9), skinMat);
-    head.position.set(0, 2.4, 0); head.castShadow = true; group.add(head);
+    const head = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.85, 0.85), headMat);
+    head.position.set(0, 2.3, 0); head.castShadow = true; group.add(head);
 
     scene.add(group);
     activePeers3D[peerId] = { group: group, name: data.name };
@@ -211,52 +211,27 @@ function updateRemotePlayerEntity(peerId, data) {
   pObj.group.rotation.y = data.ry;
 }
 
-function removeRemotePlayerEntity(peerId) {
-  if (activePeers3D[peerId]) {
-    scene.remove(activePeers3D[peerId].group);
-    delete activePeers3D[peerId];
-  }
-}
-
-// ======================================================
-// ============ RURAL ENVIRONMENT PROCEDURAL MATERIAL ===
-// ======================================================
-function generateGauleyAssetMap(type) {
-  const canvas = document.createElement('canvas'); canvas.width = 512; canvas.height = 512;
+function generateUrbanTexture(type) {
+  const canvas = document.createElement('canvas'); canvas.width = 256; canvas.height = 256;
   const ctx = canvas.getContext('2d');
   
-  if (type === 'stone-wall') {
-    // Weathered, dark hand-cut mountain bricks
-    ctx.fillStyle = '#44403c'; ctx.fillRect(0, 0, 512, 512);
-    for (let i = 0; i < 40000; i++) {
-      let x = Math.random() * 512; let y = Math.random() * 512;
-      ctx.fillStyle = Math.random() > 0.5 ? '#292524' : '#57534e';
-      ctx.fillRect(x, y, Math.random()*3, Math.random()*2);
+  if (type === 'concrete-wall') {
+    ctx.fillStyle = '#1e293b'; ctx.fillRect(0, 0, 256, 256);
+    for (let i = 0; i < 15000; i++) {
+      let x = Math.random() * 256; let y = Math.random() * 256;
+      ctx.fillStyle = Math.random() > 0.5 ? '#0f172a' : '#334155';
+      ctx.fillRect(x, y, Math.random()*2, Math.random()*2);
     }
-    // Deep structural mortar gaps
-    ctx.strokeStyle = '#1c1917'; ctx.lineWidth = 4;
-    for (let y = 0; y < 512; y += 64) {
-      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(512, y); ctx.stroke();
-      let shift = (y / 64) % 2 * 64;
-      for (let x = shift; x < 512; x += 128) {
-        ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y + 64); ctx.stroke();
-      }
-    }
+    ctx.strokeStyle = '#020617'; ctx.lineWidth = 2;
+    ctx.strokeRect(0,0,256,256);
   } else {
-    // Dirt alley pathway with packed clay look
-    ctx.fillStyle = '#78716c'; ctx.fillRect(0, 0, 512, 512);
-    for (let i = 0; i < 35000; i++) {
-      let x = Math.random() * 512; let y = Math.random() * 512;
-      ctx.fillStyle = Math.random() > 0.5 ? '#57534e' : '#a8a29e';
-      ctx.fillRect(x, y, 2, 2);
-    }
-    // Dark tracks and variations
-    for(let i=0; i<8; i++) {
-      ctx.fillStyle = 'rgba(41,37,36,0.1)';
-      ctx.beginPath(); ctx.arc(Math.random()*512, Math.random()*512, Math.random()*80+20, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#0f172a'; ctx.fillRect(0, 0, 256, 256);
+    for (let i = 0; i < 12000; i++) {
+      let x = Math.random() * 256; let y = Math.random() * 256;
+      ctx.fillStyle = Math.random() > 0.5 ? '#020617' : '#1e293b';
+      ctx.fillRect(x, y, 1, 2);
     }
   }
-  
   const texture = new THREE.CanvasTexture(canvas);
   texture.wrapS = THREE.RepeatWrapping; texture.wrapT = THREE.RepeatWrapping;
   return texture;
@@ -264,9 +239,8 @@ function generateGauleyAssetMap(type) {
 
 function initThreeEngine() {
   scene = new THREE.Scene();
-  // Moody GTA IV style low-saturation color profiles
-  scene.background = new THREE.Color(0x57534e); 
-  scene.fog = new THREE.FogExp2(0x57534e, 0.022); 
+  scene.background = new THREE.Color(0x090d16); 
+  scene.fog = new THREE.FogExp2(0x090d16, 0.02); 
 
   camera = new THREE.PerspectiveCamera(NORMAL_FOV, window.innerWidth / (window.innerHeight - 80), 0.1, 800);
   camera.position.copy(player.pos); scene.add(camera);
@@ -275,33 +249,28 @@ function initThreeEngine() {
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.toneMapping = THREE.ACESFilmicToneMapping; 
-  renderer.toneMappingExposure = 0.85; // Low exposure for dirty contrast balance
+  renderer.toneMappingExposure = 0.9; 
   renderer.setSize(window.innerWidth, window.innerHeight - 80);
   document.body.appendChild(renderer.domElement);
 
   clock = new THREE.Clock();
   
-  // Natural Lighting Environment
-  const ambient = new THREE.AmbientLight(0xd6d3d1, 0.4);
-  scene.add(ambient);
+  ambientLight = new THREE.AmbientLight(0x1e293b, 0.5);
+  scene.add(ambientLight);
 
-  sunLight = new THREE.DirectionalLight(0xe7e5e4, 1.2); 
-  sunLight.position.set(60, 140, 40);
-  sunLight.castShadow = true;
-  sunLight.shadow.mapSize.width = isTouchArchitecture ? 2048 : 4096;
-  sunLight.shadow.mapSize.height = isTouchArchitecture ? 2048 : 4096;
-  sunLight.shadow.bias = -0.0003;
-  scene.add(sunLight);
+  keyLight = new THREE.DirectionalLight(0x38bdf8, 1.0); 
+  keyLight.position.set(40, 120, 20);
+  keyLight.castShadow = true;
+  keyLight.shadow.mapSize.width = isTouchArchitecture ? 1048 : 2048;
+  keyLight.shadow.mapSize.height = isTouchArchitecture ? 1048 : 2048;
+  keyLight.shadow.bias = -0.0002;
+  scene.add(keyLight);
 
-  fillLight = new THREE.DirectionalLight(0x44403c, 0.5); 
-  fillLight.position.set(-60, 40, -40);
-  scene.add(fillLight);
-
-  flashLight = new THREE.PointLight(0xffaa44, 0, 50, 2); 
+  flashLight = new THREE.PointLight(0xfef08a, 0, 60, 2); 
   scene.add(flashLight);
 
-  buildOrganicWorld();
-  buildHeavyShotgun();
+  buildIndustrialWorld();
+  buildPumpShotgun();
 
   window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / (window.innerHeight - 80); camera.updateProjectionMatrix();
@@ -321,13 +290,12 @@ function initThreeEngine() {
   
   document.addEventListener('mousemove', (e) => {
     if (document.pointerLockElement !== renderer.domElement || isChatOpen || isTouchArchitecture) return;
-    let sens = isAiming ? 0.001 : 0.002;
+    let sens = isAiming ? 0.0012 : 0.0022;
     player.rot.y -= e.movementX * sens;
     player.rot.x -= e.movementY * sens;
     player.rot.x = Math.max(-Math.PI / 2.3, Math.min(Math.PI / 2.3, player.rot.x));
     
-    // Add micro-inertial lean based on look velocity
-    targetCameraTilt = THREE.MathUtils.clamp(-e.movementX * 0.0003, -0.02, 0.02);
+    targetCameraTilt = THREE.MathUtils.clamp(-e.movementX * 0.0004, -0.025, 0.025);
   });
   
   window.addEventListener('mousedown', (e) => { 
@@ -344,46 +312,46 @@ function initThreeEngine() {
   mainEngineLoop();
 }
 
-function buildOrganicWorld() {
-  const stoneTex = generateGauleyAssetMap('stone-wall');
-  stoneTex.repeat.set(1, 2);
-  const wallMat = new THREE.MeshStandardMaterial({ map: stoneTex, roughness: 0.9, metalness: 0.0 });
-  const blockGeo = new THREE.BoxGeometry(SCALE, SCALE * 1.6, SCALE);
+function buildIndustrialWorld() {
+  const wallTex = generateUrbanTexture('concrete-wall');
+  wallTex.repeat.set(1, 2);
+  const wallMat = new THREE.MeshStandardMaterial({ map: wallTex, roughness: 0.8, metalness: 0.1 });
+  const blockGeo = new THREE.BoxGeometry(SCALE, SCALE * 1.5, SCALE);
 
   for (let r = 0; r < LEVEL_GRID.length; r++) {
     for (let c = 0; c < LEVEL_GRID[r].length; c++) {
       if (LEVEL_GRID[r][c] === 1) {
         const wallBlock = new THREE.Mesh(blockGeo, wallMat);
-        wallBlock.position.set(c * SCALE, (SCALE * 1.6) / 2, r * SCALE);
+        wallBlock.position.set(c * SCALE, (SCALE * 1.5) / 2, r * SCALE);
         wallBlock.castShadow = true; wallBlock.receiveShadow = true;
         scene.add(wallBlock); walls.push(wallBlock);
       }
     }
   }
 
-  const dirtTex = generateGauleyAssetMap('dirt');
-  dirtTex.repeat.set(40, 40);
-  const floorMat = new THREE.MeshStandardMaterial({ map: dirtTex, roughness: 0.95, metalness: 0.0 });
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(1200, 1200), floorMat);
+  const floorTex = generateUrbanTexture('asphalt');
+  floorTex.repeat.set(30, 30);
+  const floorMat = new THREE.MeshStandardMaterial({ map: floorTex, roughness: 0.85 });
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000), floorMat);
   floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
 }
 
-function buildHeavyShotgun() {
+function buildPumpShotgun() {
   weaponGroup = new THREE.Group();
   
-  const ironMat = new THREE.MeshStandardMaterial({ color: 0x292524, roughness: 0.6, metalness: 0.7 });
-  const ruggedWood = new THREE.MeshStandardMaterial({ color: 0x3b2314, roughness: 0.8, metalness: 0.0 });
+  const finishMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.5, metalness: 0.8 });
+  const gripMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.9, metalness: 0.0 });
 
-  const stock = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.14, 0.65), ruggedWood);
-  stock.position.set(0.2, -0.32, -0.5); stock.castShadow = true;
+  const bodyFrame = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.12, 0.55), finishMat);
+  bodyFrame.position.set(0.22, -0.3, -0.5); bodyFrame.castShadow = true;
   
-  const receiver = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.09, 0.35), ironMat);
-  receiver.position.set(0, 0.06, -0.25); stock.add(receiver);
+  const slidePump = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.07, 0.25), gripMat);
+  slidePump.position.set(0, -0.04, -0.3); bodyFrame.add(slidePump);
 
-  const doubleBarrel = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.04, 0.65), ironMat);
-  doubleBarrel.position.set(0, 0.08, -0.6); stock.add(doubleBarrel);
+  const ironBarrel = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.06, 0.5), finishMat);
+  ironBarrel.position.set(0, 0.04, -0.45); bodyFrame.add(ironBarrel);
 
-  weaponGroup.add(stock);
+  weaponGroup.add(bodyFrame);
   camera.add(weaponGroup);
 }
 
@@ -392,13 +360,11 @@ function fireWeaponSystem() {
   if (isChatOpen || !canShoot) return;
 
   canShoot = false;
-  
-  // Massive heavy recoil mechanics
-  recoilIntensity += 0.45; 
-  player.rot.x += 0.05; 
+  recoilIntensity += 0.4; 
+  player.rot.x += 0.04; 
 
-  flashLight.position.copy(player.pos).add(new THREE.Vector3(0.15, -0.15, -0.9).applyQuaternion(camera.quaternion));
-  flashLight.intensity = 35.0;
+  flashLight.position.copy(player.pos).add(new THREE.Vector3(0.18, -0.18, -0.85).applyQuaternion(camera.quaternion));
+  flashLight.intensity = 25.0;
 
   setTimeout(() => { flashLight.intensity = 0; }, 40);
   setTimeout(() => { canShoot = true; }, FIRE_DELAY);
@@ -412,24 +378,24 @@ function fireWeaponSystem() {
   const hits = raycaster.intersectObjects(targets);
   if (hits.length > 0) {
     const peerId = maps[targets.indexOf(hits[0].object)];
-    generateImpactFX(hits[0].point, 0x7f1d1d, 40); 
+    generateImpactFX(hits[0].point, 0xef4444, 35); 
     broadcastPayload({ type: 'frag', killer: player.name, victim: activePeers3D[peerId].name });
     killCount++; document.getElementById('score-display').innerText = killCount;
   } else {
     const wallHits = raycaster.intersectObjects(walls);
-    if (wallHits.length > 0) generateImpactFX(wallHits[0].point, 0x78716c, 20); // Dirt dust particles
+    if (wallHits.length > 0) generateImpactFX(wallHits[0].point, 0x475569, 15); 
   }
 }
 
 function generateImpactFX(pos, colorHex, count) {
-  const pGeo = new THREE.BoxGeometry(0.1, 0.1, 0.1);
+  const pGeo = new THREE.BoxGeometry(0.08, 0.08, 0.08);
   const pMat = new THREE.MeshBasicMaterial({ color: colorHex });
   for (let i = 0; i < count; i++) {
     const m = new THREE.Mesh(pGeo, pMat); m.position.copy(pos); scene.add(m);
     activeSparks.push({
       mesh: m,
-      vel: new THREE.Vector3((Math.random() - 0.5) * 0.9, (Math.random() - 0.2) * 1.0, (Math.random() - 0.5) * 0.9),
-      life: 35
+      vel: new THREE.Vector3((Math.random() - 0.5) * 0.8, (Math.random() - 0.2) * 0.9, (Math.random() - 0.5) * 0.8),
+      life: 30
     });
   }
 }
@@ -442,7 +408,7 @@ function initTouchInterfaceLoops() {
   fire.addEventListener('touchstart', (e) => { e.preventDefault(); fireWeaponSystem(); });
   ads.addEventListener('touchstart', (e) => { 
     e.preventDefault(); isAiming = !isAiming;
-    ads.style.background = isAiming ? "rgba(188,108,37,0.5)" : "rgba(0,0,0,0.3)";
+    ads.style.background = isAiming ? "rgba(239,68,68,0.5)" : "rgba(0,0,0,0.4)";
   });
 
   window.addEventListener('touchstart', (e) => {
@@ -468,7 +434,7 @@ function initTouchInterfaceLoops() {
         mobileMoveVector.copy(dir).multiplyScalar(dist / limit);
       }
       if (t.identifier === touchLookId) {
-        let sens = isAiming ? 0.0025 : 0.005;
+        let sens = isAiming ? 0.002 : 0.004;
         player.rot.y -= (t.clientX - lookLastPos.x) * sens;
         player.rot.x -= (t.clientY - lookLastPos.y) * (sens * 0.85);
         player.rot.x = Math.max(-Math.PI / 2.3, Math.min(Math.PI / 2.3, player.rot.x));
@@ -505,7 +471,7 @@ function toggleTextChat() {
 function pushChatMessage(sender, text) {
   const log = document.getElementById('chat-log');
   const div = document.createElement('div');
-  div.innerHTML = `<span style="color: #bc6c25;">[${sender}]:</span> ${text}`;
+  div.innerHTML = `<span style="color: #ef4444;">[${sender}]:</span> ${text}`;
   log.appendChild(div); if (log.children.length > 5) log.removeChild(log.children[0]);
 }
 
@@ -545,7 +511,7 @@ function mainEngineLoop() {
     moveVector.applyAxisAngle(new THREE.Vector3(0, 1, 0), player.rot.y);
     if (!isTouchArchitecture) moveVector.normalize();
     
-    let speedMod = isAiming ? 0.4 : 1.0;
+    let speedMod = isAiming ? 0.45 : 1.0;
     moveVector.multiplyScalar(player.speed * speedMod);
 
     const nextX = player.pos.x + moveVector.x;
@@ -554,30 +520,28 @@ function mainEngineLoop() {
       player.pos.x = nextX; player.pos.z = nextZ;
     }
 
-    // Realistic inertia look-sway
     targetCameraTilt = THREE.MathUtils.lerp(targetCameraTilt, 0, 0.08);
     camera.rotation.z += targetCameraTilt;
 
-    // Organic head bobbing loop simulation
     if (moveVector.lengthSq() > 0.001 && !isAiming) {
-      cameraSway = Math.sin(time * 10) * 0.02;
-      camera.position.y += Math.abs(Math.sin(time * 10)) * 0.04;
+      cameraSway = Math.sin(time * 11) * 0.015;
+      camera.position.y += Math.abs(Math.sin(time * 11)) * 0.035;
     } else {
       cameraSway = THREE.MathUtils.lerp(cameraSway, 0, 0.1);
     }
 
     let defaultX = 0.0;
-    let defaultY = -0.22;
-    let defaultZ = -0.32;
+    let defaultY = -0.2;
+    let defaultZ = -0.3;
 
-    let hipX = 0.22, hipY = -0.34, hipZ = -0.55;
+    let hipX = 0.22, hipY = -0.3, hipZ = -0.55;
     
     let targetX = THREE.MathUtils.lerp(hipX, defaultX, currentAdsWeight) + cameraSway;
-    let targetY = THREE.MathUtils.lerp(hipY, defaultY, currentAdsWeight) + (recoilIntensity * 0.25);
+    let targetY = THREE.MathUtils.lerp(hipY, defaultY, currentAdsWeight) + (recoilIntensity * 0.22);
     let targetZ = THREE.MathUtils.lerp(hipZ, defaultZ, currentAdsWeight) - recoilIntensity;
 
     weaponGroup.children[0].position.set(targetX, targetY, targetZ);
-    recoilIntensity = THREE.MathUtils.lerp(recoilIntensity, 0, 0.14);
+    recoilIntensity = THREE.MathUtils.lerp(recoilIntensity, 0, 0.12);
 
     camera.position.set(player.pos.x, player.pos.y, player.pos.z);
   }
