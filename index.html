@@ -44,8 +44,8 @@
 <body>
 
   <div id="terminal-lobby">
-    <div class="terminal-title">SLUDGECORE BUILD v0.2.2</div>
-    <div style="color: #64748b; margin-bottom: 25px; font-size: 11px; tracking: 1px;">SYSTEM ARCH: DESKTOP MOUSE POINTER CAPTURE</div>
+    <div class="terminal-title">SLUDGECORE BUILD v0.2.5</div>
+    <div style="color: #64748b; margin-bottom: 25px; font-size: 11px; tracking: 1px;">SYSTEM ARCH: DESKTOP TACTICAL ENGAGEMENT KERNEL</div>
     
     <div class="setup-box">
       <input type="text" id="room-field" class="input-field" value="TACTICAL_MAZE_ZONE">
@@ -86,9 +86,15 @@ const LEVEL_GRID = [
 const SCALE = 16;
 
 let scene, camera, renderer, clock;
-let player = { pos: new THREE.Vector3(24, 4.8, 24), rot: new THREE.Vector3(0, 0, 0), speed: 0.15, health: 100, name: '' };
+let player = { pos: new THREE.Vector3(24, 4.8, 24), rot: new THREE.Vector3(0, 0, 0), health: 100, name: '' };
 let keys = {};
 let isEngineActive = false, isChatOpen = false;
+
+// Movement Metrics
+const WALK_SPEED = 0.14;
+const SPRINT_SPEED = 0.25;
+let currentSpeed = WALK_SPEED;
+let isSprinting = false;
 
 let canShoot = true;
 const FIRE_DELAY = 850; 
@@ -97,8 +103,11 @@ let recoilIntensity = 0, targetCameraTilt = 0, cameraSway = 0;
 
 let isAiming = false;
 let currentAdsWeight = 0;
+let currentSprintWeight = 0;
+
 const NORMAL_FOV = 65;
 const ADS_FOV = 45;
+const SPRINT_FOV = 75;
 
 const walls = [];
 const activeSparks = [];
@@ -273,11 +282,13 @@ function initThreeEngine() {
   
   window.addEventListener('mousedown', (e) => { 
     if (e.button === 0) fireWeaponSystem(); 
-    if (e.button === 2) isAiming = true;     
+    if (e.button === 2) {
+      isAiming = true;
+      isSprinting = false; // Aiming down sights cancels running execution
+    }     
   });
   window.addEventListener('mouseup', (e) => { if (e.button === 2) isAiming = false; });
 
-  // Prevent right click menu in game
   window.addEventListener('contextmenu', e => e.preventDefault());
 
   isEngineActive = true;
@@ -328,7 +339,7 @@ function buildPumpShotgun() {
 }
 
 function fireWeaponSystem() {
-  if (document.pointerLockElement !== renderer.domElement || isChatOpen || !canShoot) return;
+  if (document.pointerLockElement !== renderer.domElement || isChatOpen || !canShoot || isSprinting) return;
 
   canShoot = false;
   recoilIntensity += 0.4; 
@@ -374,7 +385,7 @@ function generateImpactFX(pos, colorHex, count) {
 function toggleTextChat() {
   const input = document.getElementById('chat-input');
   if (!isChatOpen) {
-    isChatOpen = true; keys = {}; input.style.display = 'block'; input.focus();
+    isChatOpen = true; keys = {}; isSprinting = false; input.style.display = 'block'; input.focus();
     document.exitPointerLock();
   } else {
     isChatOpen = false;
@@ -412,11 +423,26 @@ function mainEngineLoop() {
     camera.rotation.y = player.rot.y;
     camera.rotation.x = player.rot.x;
 
-    let targetWeight = isAiming ? 1.0 : 0.0;
-    currentAdsWeight = THREE.MathUtils.lerp(currentAdsWeight, targetWeight, 0.15);
-    camera.fov = THREE.MathUtils.lerp(NORMAL_FOV, ADS_FOV, currentAdsWeight);
+    // Evaluate Sprint vs Walk conditions (Can only sprint forwards)
+    if (keys['ShiftLeft'] && keys['KeyW'] && !isAiming) {
+      isSprinting = true;
+    } else {
+      isSprinting = false;
+    }
+
+    // Smooth weight interpolations
+    let targetAdsWeight = isAiming ? 1.0 : 0.0;
+    currentAdsWeight = THREE.MathUtils.lerp(currentAdsWeight, targetAdsWeight, 0.15);
+
+    let targetSprintWeight = isSprinting ? 1.0 : 0.0;
+    currentSprintWeight = THREE.MathUtils.lerp(currentSprintWeight, targetSprintWeight, 0.12);
+
+    // Dynamic FOV tracking: standard -> ADS zoom -> Sprint stretch
+    let baseFov = THREE.MathUtils.lerp(NORMAL_FOV, ADS_FOV, currentAdsWeight);
+    camera.fov = THREE.MathUtils.lerp(baseFov, SPRINT_FOV, currentSprintWeight);
     camera.updateProjectionMatrix();
 
+    // Movement Vectors Calculation
     const moveVector = new THREE.Vector3();
     if (keys['KeyW']) moveVector.z -= 1;
     if (keys['KeyS']) moveVector.z += 1;
@@ -426,8 +452,10 @@ function mainEngineLoop() {
     moveVector.applyAxisAngle(new THREE.Vector3(0, 1, 0), player.rot.y);
     moveVector.normalize();
     
+    // Dynamic Speed Modifiers
+    let currentSpeedMetric = THREE.MathUtils.lerp(WALK_SPEED, SPRINT_SPEED, currentSprintWeight);
     let speedMod = isAiming ? 0.45 : 1.0;
-    moveVector.multiplyScalar(player.speed * speedMod);
+    moveVector.multiplyScalar(currentSpeedMetric * speedMod);
 
     const nextX = player.pos.x + moveVector.x;
     const nextZ = player.pos.z + moveVector.z;
@@ -438,26 +466,38 @@ function mainEngineLoop() {
     targetCameraTilt = THREE.MathUtils.lerp(targetCameraTilt, 0, 0.08);
     camera.rotation.z += targetCameraTilt;
 
-    if (moveVector.lengthSq() > 0.001 && !isAiming) {
-      cameraSway = Math.sin(time * 11) * 0.015;
-      camera.position.y += Math.abs(Math.sin(time * 11)) * 0.035;
+    // Scaled Procedural Head Bob
+    if (moveVector.lengthSq() > 0.001) {
+      let bobFrequency = isSprinting ? 15.5 : 11.0;
+      let bobAmplitude = isSprinting ? 0.065 : 0.035;
+      let swayAmplitude = isSprinting ? 0.03 : 0.015;
+
+      cameraSway = Math.sin(time * bobFrequency) * swayAmplitude;
+      camera.position.y += Math.abs(Math.sin(time * bobFrequency)) * bobAmplitude;
     } else {
       cameraSway = THREE.MathUtils.lerp(cameraSway, 0, 0.1);
     }
 
-    let defaultX = 0.0;
-    let defaultY = -0.2;
-    let defaultZ = -0.3;
-
+    // Gun Spatial Transformations (Hip, ADS, or Sprinting/Downed positions)
     let hipX = 0.22, hipY = -0.3, hipZ = -0.55;
-    
-    let targetX = THREE.MathUtils.lerp(hipX, defaultX, currentAdsWeight) + cameraSway;
-    let targetY = THREE.MathUtils.lerp(hipY, defaultY, currentAdsWeight) + (recoilIntensity * 0.22);
-    let targetZ = THREE.MathUtils.lerp(hipZ, defaultZ, currentAdsWeight) - recoilIntensity;
+    let adsX = 0.0, adsY = -0.2, adsZ = -0.3;
+    let sprintX = 0.28, sprintY = -0.55, sprintZ = -0.45; // Downward angled carry
+
+    let currentRestX = THREE.MathUtils.lerp(hipX, adsX, currentAdsWeight);
+    let currentRestY = THREE.MathUtils.lerp(hipY, adsY, currentAdsWeight);
+    let currentRestZ = THREE.MathUtils.lerp(hipZ, adsZ, currentAdsWeight);
+
+    let targetX = THREE.MathUtils.lerp(currentRestX, sprintX, currentSprintWeight) + cameraSway;
+    let targetY = THREE.MathUtils.lerp(currentRestY, sprintY, currentSprintWeight) + (recoilIntensity * 0.22);
+    let targetZ = THREE.MathUtils.lerp(currentRestZ, sprintZ, currentSprintWeight) - recoilIntensity;
 
     weaponGroup.children[0].position.set(targetX, targetY, targetZ);
-    recoilIntensity = THREE.MathUtils.lerp(recoilIntensity, 0, 0.12);
+    
+    // Smooth gun rotation during sprint down
+    weaponGroup.children[0].rotation.x = THREE.MathUtils.lerp(0, -0.4, currentSprintWeight);
+    weaponGroup.children[0].rotation.y = THREE.MathUtils.lerp(0, -0.2, currentSprintWeight);
 
+    recoilIntensity = THREE.MathUtils.lerp(recoilIntensity, 0, 0.12);
     camera.position.set(player.pos.x, player.pos.y, player.pos.z);
   }
 
